@@ -7,15 +7,18 @@ struct TrainingDayCard: View {
     var body: some View {
         CardView {
             VStack(spacing: 16) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(trainingDay.name)
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(Theme.foreground)
-                    Text("\(trainingDay.exercises.count) exercises")
-                        .font(.system(size: 14))
-                        .foregroundColor(Theme.muted)
+                NavigationLink(value: AppRoute.trainingDetail(program, trainingDay)) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(trainingDay.name)
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(Theme.foreground)
+                        Text("\(trainingDay.exercises.count) exercises")
+                            .font(.system(size: 14))
+                            .foregroundColor(Theme.muted)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .buttonStyle(PlainButtonStyle())
 
                 Rectangle()
                     .fill(Theme.border)

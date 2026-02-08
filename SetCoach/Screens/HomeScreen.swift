@@ -66,6 +66,10 @@ struct HomeScreen: View {
         switch route {
         case .programDetail(let program):
             ProgramDetailScreen(program: program)
+        case .trainingDetail(let program, let trainingDay):
+            TrainingDetailScreen(program: program, trainingDay: trainingDay)
+        case .exerciseHistory(let exerciseName):
+            ExerciseHistoryPlaceholderScreen(exerciseName: exerciseName)
         default:
             Text("Coming soon")
         }
@@ -74,5 +78,5 @@ struct HomeScreen: View {
 
 #Preview {
     HomeScreen()
-        .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self], inMemory: true)
+        .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self, WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self], inMemory: true)
 }

@@ -46,7 +46,7 @@ struct ProgramDetailScreen: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack {
-                    Button(action: {}) {
+                    Button(action: { /* TODO: Navigate to addProgram(program) */ }) {
                         Image(systemName: "pencil")
                             .foregroundColor(Theme.primary)
                     }
@@ -75,8 +75,13 @@ struct ProgramDetailScreen: View {
 }
 
 #Preview {
-    NavigationStack {
-        ProgramDetailScreen(program: Program(name: "Push Pull Legs", programDescription: "3-day split", trainingDays: []))
+    let program = Program(name: "Push Pull Legs", programDescription: "Classic 3-day split for strength and hypertrophy", trainingDays: [])
+    let pushDay = TrainingDay(name: "Push Day", exercises: [])
+    let pullDay = TrainingDay(name: "Pull Day", exercises: [])
+    let legDay = TrainingDay(name: "Leg Day", exercises: [])
+    program.trainingDays = [pushDay, pullDay, legDay]
+    return NavigationStack {
+        ProgramDetailScreen(program: program)
     }
     .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self], inMemory: true)
 }
