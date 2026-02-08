@@ -6,9 +6,9 @@ final class Program {
     @Attribute(.unique) var id: String
     var name: String
     var programDescription: String?
-    var trainingDays: [TrainingDay]
+    @Relationship(deleteRule: .cascade) var trainingDays: [TrainingDay]
     var createdAt: Date
-
+    
     init(id: String = UUID().uuidString, name: String,
          programDescription: String? = nil,
          trainingDays: [TrainingDay] = [],

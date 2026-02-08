@@ -1,24 +1,13 @@
-//
-//  ContentView.swift
-//  SetCoach
-//
-//  Created by Code Forge on 08.02.2026..
-//
-
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        HomeScreen()
     }
 }
 
 #Preview {
     ContentView()
+        .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self, WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self], inMemory: true)
 }

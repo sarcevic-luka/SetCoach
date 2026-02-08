@@ -9,12 +9,12 @@ final class WorkoutSession {
     var trainingDayId: String
     var trainingDayName: String
     var date: Date
-    var duration: Int // minutes
-    var exercises: [WorkoutExercise]
+    var duration: Int  // minutes
+    @Relationship(deleteRule: .cascade) var exercises: [WorkoutExercise]
     var bodyWeight: Double?
     var waistCircumference: Double?
     var completed: Bool
-
+    
     init(id: String = UUID().uuidString, programId: String,
          programName: String, trainingDayId: String,
          trainingDayName: String, date: Date = Date(),
