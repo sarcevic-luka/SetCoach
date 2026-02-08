@@ -57,9 +57,9 @@ struct ProgramDetailScreen: View {
                 }
             }
         }
-        .alert("Delete Program", isPresented: $showDeleteAlert) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete", role: .destructive) {
+        .alert(String(localized: "Delete Program"), isPresented: $showDeleteAlert) {
+            Button(String(localized: "Cancel"), role: .cancel) {}
+            Button(String(localized: "Delete"), role: .destructive) {
                 modelContext.delete(program)
                 do {
                     try modelContext.save()
@@ -69,7 +69,7 @@ struct ProgramDetailScreen: View {
                 dismiss()
             }
         } message: {
-            Text("Are you sure you want to delete \(program.name)?")
+            Text(String(format: String(localized: "Are you sure you want to delete %@?"), program.name))
         }
     }
 }

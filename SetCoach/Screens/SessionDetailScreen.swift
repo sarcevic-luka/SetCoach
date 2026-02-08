@@ -20,12 +20,12 @@ struct SessionDetailScreen: View {
 
                     HStack(spacing: 16) {
                         Label(formatDate(session.date), systemImage: "calendar")
-                        Label("\(session.duration) min", systemImage: "clock")
+                        Label(String(format: String(localized: "%d min"), session.duration), systemImage: "clock")
                         if let weight = session.bodyWeight {
-                            Label(String(format: "%.1f kg", weight), systemImage: "figure.stand")
+                            Label(String(format: String(localized: "%.1f kg"), weight), systemImage: "figure.stand")
                         }
                         if let waist = session.waistCircumference {
-                            Label(String(format: "%.1f cm", waist), systemImage: "ruler")
+                            Label(String(format: String(localized: "%.1f cm"), waist), systemImage: "ruler")
                         }
                     }
                     .font(.system(size: 14))
@@ -54,7 +54,8 @@ struct SessionDetailScreen: View {
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, yyyy"
+        formatter.dateStyle = .medium
+        formatter.locale = Locale.current
         return formatter.string(from: date)
     }
 }
@@ -80,11 +81,11 @@ private struct SessionExerciseCard: View {
 
                 ForEach(exercise.sets, id: \.setNumber) { set in
                     HStack {
-                        Text("Set \(set.setNumber)")
+                        Text(String(format: String(localized: "Set %d"), set.setNumber))
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(Theme.muted)
                             .frame(width: 50, alignment: .leading)
-                        Text(String(format: "%.1f kg × %d reps", set.weight, set.reps))
+                        Text(String(format: String(localized: "%.1f kg × %d"), set.weight, set.reps))
                             .font(.system(size: 14))
                             .foregroundColor(Theme.foreground)
                         if set.completed {

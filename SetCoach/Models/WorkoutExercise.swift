@@ -1,10 +1,15 @@
 import Foundation
 import SwiftData
+import SwiftUI
 
 enum Difficulty: String, Codable {
     case prelagano = "Prelagano"
     case ok = "OK"
     case pretesko = "Preteško"
+
+    var localizedString: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
 }
 
 enum ProgressDirection: String, Codable {

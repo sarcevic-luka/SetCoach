@@ -36,7 +36,7 @@ struct ActiveExerciseCard: View {
                             Text(exercise.name)
                                 .font(.system(size: 16, weight: .semibold))
                                 .foregroundColor(Theme.foreground)
-                            Text("\(completedCount)/\(exercise.sets.count) sets")
+                            Text(String(format: String(localized: "%d/%d sets"), completedCount, exercise.sets.count))
                                 .font(.system(size: 12))
                                 .foregroundColor(Theme.muted)
                         }

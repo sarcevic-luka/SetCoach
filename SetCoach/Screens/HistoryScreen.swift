@@ -18,7 +18,7 @@ struct HistoryScreen: View {
                         Text("Training History")
                             .font(.system(size: 24, weight: .bold))
                             .foregroundColor(Theme.foreground)
-                        Text("\(completedSessions.count) completed workouts")
+                        Text(String(format: String(localized: "%d completed workouts"), completedSessions.count))
                             .font(.system(size: 14))
                             .foregroundColor(Theme.muted)
                     }

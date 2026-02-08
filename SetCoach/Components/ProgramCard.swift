@@ -25,7 +25,7 @@ struct ProgramCard: View {
                             .lineLimit(1)
                     }
                     HStack(spacing: 12) {
-                        Label("\(program.trainingDays.count) days", systemImage: "calendar")
+                        Label(String(format: String(localized: "%d days"), program.trainingDays.count), systemImage: "calendar")
                     }
                     .font(.system(size: 12))
                     .foregroundColor(Theme.muted)

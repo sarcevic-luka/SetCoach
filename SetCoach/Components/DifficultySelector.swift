@@ -11,7 +11,7 @@ struct DifficultySelector: View {
             HStack(spacing: 8) {
                 ForEach([Difficulty.prelagano, .ok, .pretesko], id: \.self) { diff in
                     Button(action: { difficulty = diff }) {
-                        Text(diff.rawValue)
+                        Text(diff.localizedString)
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(difficulty == diff ? buttonColor(diff) : Theme.muted)
                             .frame(maxWidth: .infinity)

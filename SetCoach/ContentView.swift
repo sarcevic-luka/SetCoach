@@ -101,7 +101,7 @@ private struct AddProgramPlaceholderView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button(String(localized: "Done")) { dismiss() }
                         .foregroundColor(Theme.primary)
                 }
             }

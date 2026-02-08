@@ -25,7 +25,7 @@ struct ExerciseCard: View {
                         }
                     }
 
-                    Text("\(exercise.targetSets) sets x \(exercise.targetRepsMin)-\(exercise.targetRepsMax) reps")
+                    Text(String(format: String(localized: "%d sets x %d-%d reps"), exercise.targetSets, exercise.targetRepsMin, exercise.targetRepsMax))
                         .font(.system(size: 14))
                         .foregroundColor(Theme.muted)
 
@@ -60,7 +60,7 @@ struct SetChip: View {
     let reps: Int
 
     var body: some View {
-        Text(String(format: "%.1fkg x %d", weight, reps))
+        Text(String(format: String(localized: "%.1fkg x %d"), weight, reps))
             .font(.system(size: 12, weight: .medium))
             .foregroundColor(Theme.foreground)
             .padding(.horizontal, 10)

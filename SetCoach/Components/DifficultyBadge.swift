@@ -4,7 +4,7 @@ struct DifficultyBadge: View {
     let difficulty: Difficulty
 
     var body: some View {
-        Text(difficulty.rawValue)
+        Text(difficulty.localizedString)
             .font(.system(size: 12, weight: .medium))
             .foregroundColor(badgeColor)
             .padding(.horizontal, 12)

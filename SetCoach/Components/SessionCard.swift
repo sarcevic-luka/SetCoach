@@ -23,10 +23,10 @@ struct SessionCard: View {
 
                     HStack(spacing: 16) {
                         Label(formatDate(session.date), systemImage: "calendar")
-                        Label("\(session.duration)min", systemImage: "clock")
-                        Label("\(session.exercises.count) exercises", systemImage: "list.bullet")
+                        Label(String(format: String(localized: "%d min"), session.duration), systemImage: "clock")
+                        Label(String(format: String(localized: "%d exercises"), session.exercises.count), systemImage: "list.bullet")
                         if let weight = session.bodyWeight {
-                            Label(String(format: "%.1fkg", weight), systemImage: "figure.stand")
+                            Label(String(format: String(localized: "%.1f kg"), weight), systemImage: "figure.stand")
                         }
                     }
                     .font(.system(size: 12))
@@ -44,7 +44,7 @@ struct SessionCard: View {
                                     .cornerRadius(6)
                             }
                             if session.exercises.count > 5 {
-                                Text("+\(session.exercises.count - 5)")
+                                Text("+" + String(session.exercises.count - 5))
                                     .font(.system(size: 11, weight: .medium))
                                     .foregroundColor(Theme.muted)
                                     .padding(.horizontal, 8)
@@ -62,7 +62,8 @@ struct SessionCard: View {
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, yyyy"
+        formatter.dateStyle = .medium
+        formatter.locale = Locale.current
         return formatter.string(from: date)
     }
 }

@@ -101,7 +101,7 @@ struct ActiveWorkoutScreen: View {
 
     private var headerView: some View {
         HStack {
-            Text("\(completedSets)/\(totalSets) sets")
+            Text(String(format: String(localized: "%d/%d sets"), completedSets, totalSets))
                 .font(.system(size: 14, weight: .medium))
                 .foregroundColor(Theme.muted)
         }

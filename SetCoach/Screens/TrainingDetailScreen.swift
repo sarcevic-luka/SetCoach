@@ -21,7 +21,7 @@ struct TrainingDetailScreen: View {
                 if let last = lastSession {
                     HStack(spacing: 16) {
                         Label(formatDate(last.date), systemImage: "calendar")
-                        Label("\(last.duration)min", systemImage: "clock")
+                        Label(String(format: String(localized: "%d min"), last.duration), systemImage: "clock")
                         Spacer()
                     }
                     .font(.system(size: 12, weight: .medium))
@@ -67,7 +67,8 @@ struct TrainingDetailScreen: View {
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, yyyy"
+        formatter.dateStyle = .medium
+        formatter.locale = Locale.current
         return formatter.string(from: date)
     }
 }

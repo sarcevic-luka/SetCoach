@@ -12,7 +12,7 @@ struct TrainingDayCard: View {
                         Text(trainingDay.name)
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(Theme.foreground)
-                        Text("\(trainingDay.exercises.count) exercises")
+                        Text(String(format: String(localized: "%d exercises"), trainingDay.exercises.count))
                             .font(.system(size: 14))
                             .foregroundColor(Theme.muted)
                     }
