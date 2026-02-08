@@ -70,6 +70,8 @@ struct HomeScreen: View {
             TrainingDetailScreen(program: program, trainingDay: trainingDay)
         case .exerciseHistory(let exerciseName):
             ExerciseHistoryPlaceholderScreen(exerciseName: exerciseName)
+        case .activeWorkout(let program, let trainingDay):
+            ActiveWorkoutScreen(program: program, trainingDay: trainingDay)
         default:
             Text("Coming soon")
         }
