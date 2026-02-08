@@ -1,11 +1,5 @@
-//
-//  SetCoachApp.swift
-//  SetCoach
-//
-//  Created by Code Forge on 08.02.2026..
-//
-
 import SwiftUI
+import SwiftData
 
 @main
 struct SetCoachApp: App {
@@ -13,5 +7,13 @@ struct SetCoachApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: [
+            Program.self,
+            TrainingDay.self,
+            ExerciseTemplate.self,
+            WorkoutSession.self,
+            WorkoutExercise.self,
+            ExerciseSet.self
+        ])
     }
 }
