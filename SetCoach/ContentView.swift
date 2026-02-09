@@ -57,7 +57,7 @@ struct ContentView: View {
             )
         }
         .sheet(isPresented: $showAddProgram) {
-            AddProgramPlaceholderView()
+            AddEditProgramScreen(editProgram: nil)
         }
     }
 }
@@ -78,33 +78,6 @@ private struct TabButton: View {
             }
             .foregroundColor(isSelected ? Theme.primary : Theme.muted)
             .frame(maxWidth: .infinity)
-        }
-    }
-}
-
-private struct AddProgramPlaceholderView: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.background.ignoresSafeArea()
-                VStack(spacing: 16) {
-                    Text("Add Program")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(Theme.foreground)
-                    Text("Coming in a future update")
-                        .font(.system(size: 14))
-                        .foregroundColor(Theme.muted)
-                }
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(String(localized: "Done")) { dismiss() }
-                        .foregroundColor(Theme.primary)
-                }
-            }
         }
     }
 }

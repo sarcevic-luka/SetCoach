@@ -53,6 +53,63 @@ enum SeedData {
         pplProgram.trainingDays = [pushDay, pullDay, legDay]
         context.insert(pplProgram)
 
+        // Program 2: Full Body 3-Day Split (Trening 1, 2, 3)
+        let trening1Exercises: [ExerciseTemplate] = [
+            ExerciseTemplate(name: "Čučanj", targetSets: 4, targetRepsMin: 6, targetRepsMax: 8),
+            ExerciseTemplate(name: "Nožna ekstenzija", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Kosi bench press na Smith mašini", targetSets: 4, targetRepsMin: 6, targetRepsMax: 8),
+            ExerciseTemplate(name: "Veslanje u pretklonu", targetSets: 3, targetRepsMin: 8, targetRepsMax: 10),
+            ExerciseTemplate(name: "Rameni potisak bučicama", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Lat pulldown", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Triceps ekstenzija", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Pregib EZ šipkom", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Podizanje nogu za trbuh (ležeći)", targetSets: 3, targetRepsMin: 15, targetRepsMax: 25, notes: "MAX"),
+        ]
+        trening1Exercises.forEach { context.insert($0) }
+        let trening1 = TrainingDay(name: "Trening 1")
+        trening1.exercises = trening1Exercises
+
+        let trening2Exercises: [ExerciseTemplate] = [
+            ExerciseTemplate(name: "Rumunjsko mrtvo dizanje", targetSets: 4, targetRepsMin: 8, targetRepsMax: 10),
+            ExerciseTemplate(name: "Nožni pregib", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Ravni potisak bučicama", targetSets: 4, targetRepsMin: 6, targetRepsMax: 8),
+            ExerciseTemplate(name: "Veslanje bučicom u pretklonu", targetSets: 3, targetRepsMin: 8, targetRepsMax: 10),
+            ExerciseTemplate(name: "Odručenje bučicama", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Lat pulldown uskim hvatom", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Triceps ekstenzija iznad glave", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Hammer pregib", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Podizanje nogu za trbuh (viseći)", targetSets: 3, targetRepsMin: 15, targetRepsMax: 25, notes: "MAX"),
+        ]
+        trening2Exercises.forEach { context.insert($0) }
+        let trening2 = TrainingDay(name: "Trening 2")
+        trening2.exercises = trening2Exercises
+
+        let trening3Exercises: [ExerciseTemplate] = [
+            ExerciseTemplate(name: "Mrtvo dizanje", targetSets: 4, targetRepsMin: 6, targetRepsMax: 8),
+            ExerciseTemplate(name: "Face pulls", targetSets: 4, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Kosi bench press", targetSets: 4, targetRepsMin: 6, targetRepsMax: 8),
+            ExerciseTemplate(name: "T-bar veslanje", targetSets: 3, targetRepsMin: 6, targetRepsMax: 8),
+            ExerciseTemplate(name: "Propadanja", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Slijeganje bučicama", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Potisak sa čela EZ šipkom", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Pregib bučicama", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Cable crunch za trbuh", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
+            ExerciseTemplate(name: "Podizanje za listove - Smith mašina", targetSets: 4, targetRepsMin: 12, targetRepsMax: 15),
+        ]
+        trening3Exercises.forEach { context.insert($0) }
+        let trening3 = TrainingDay(name: "Trening 3")
+        trening3.exercises = trening3Exercises
+
+        let fullBodyProgram = Program(
+            name: "Full Body 3-Day",
+            programDescription: "Trening 1, 2, 3 – puni tijelo u tri dana"
+        )
+        for day in [trening1, trening2, trening3] {
+            context.insert(day)
+        }
+        fullBodyProgram.trainingDays = [trening1, trening2, trening3]
+        context.insert(fullBodyProgram)
+
         do {
             try context.save()
         } catch {

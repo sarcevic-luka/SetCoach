@@ -9,6 +9,7 @@ struct ProgramDetailScreen: View {
     @Environment(\.dismiss) private var dismiss
     let program: Program
     @State private var showDeleteAlert = false
+    @State private var showEditSheet = false
 
     var body: some View {
         ZStack {
@@ -46,7 +47,7 @@ struct ProgramDetailScreen: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack {
-                    Button(action: { /* TODO: Navigate to addProgram(program) */ }) {
+                    Button(action: { showEditSheet = true }) {
                         Image(systemName: "pencil")
                             .foregroundColor(Theme.primary)
                     }
@@ -70,6 +71,9 @@ struct ProgramDetailScreen: View {
             }
         } message: {
             Text(String(format: String(localized: "Are you sure you want to delete %@?"), program.name))
+        }
+        .sheet(isPresented: $showEditSheet) {
+            AddEditProgramScreen(editProgram: program)
         }
     }
 }
