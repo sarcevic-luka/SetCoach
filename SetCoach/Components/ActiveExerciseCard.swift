@@ -4,6 +4,7 @@ struct ActiveExerciseCard: View {
     @Binding var exercise: WorkoutExercise
     let isExpanded: Bool
     let onToggleExpand: () -> Void
+    var onSetComplete: () -> Void = {}
 
     private var completedCount: Int {
         exercise.sets.filter(\.completed).count
@@ -68,10 +69,13 @@ struct ActiveExerciseCard: View {
                         .foregroundColor(Theme.muted)
 
                         ForEach(exercise.sets.indices, id: \.self) { index in
-                            SetRow(set: Binding(
-                                get: { exercise.sets[index] },
-                                set: { exercise.sets[index] = $0 }
-                            ))
+                            SetRow(
+                                set: Binding(
+                                    get: { exercise.sets[index] },
+                                    set: { exercise.sets[index] = $0 }
+                                ),
+                                onComplete: onSetComplete
+                            )
                         }
 
                         Rectangle()
@@ -96,7 +100,7 @@ struct ActiveExerciseCard: View {
             ExerciseSet(setNumber: 2, weight: 60, reps: 8, completed: true)
         ]
     )
-    return ActiveExerciseCard(exercise: $exercise, isExpanded: true, onToggleExpand: {})
+    return ActiveExerciseCard(exercise: $exercise, isExpanded: true, onToggleExpand: {}, onSetComplete: {})
         .padding()
         .background(Theme.background)
 }

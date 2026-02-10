@@ -303,6 +303,18 @@
         }
       }
     },
+    "Continue" : {
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue" } }, "hr" : { "stringUnit" : { "state" : "translated", "value" : "Nastavi" } } }
+    },
+    "Skip" : {
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Skip" } }, "hr" : { "stringUnit" : { "state" : "translated", "value" : "Preskoči" } } }
+    },
+    "Rest timer" : {
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Rest timer" } }, "hr" : { "stringUnit" : { "state" : "translated", "value" : "Odmor" } } }
+    },
+    "Time's up!" : {
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Time's up!" } }, "hr" : { "stringUnit" : { "state" : "translated", "value" : "Vrijeme je isteklo!" } } }
+    },
     "Cancel" : {
       "localizations" : {
         "en" : {

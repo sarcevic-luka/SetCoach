@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SetRow: View {
     @Binding var set: ExerciseSet
+    var onComplete: (() -> Void)?
 
     var body: some View {
         HStack(spacing: 8) {
@@ -66,7 +67,12 @@ struct SetRow: View {
             }
             .frame(maxWidth: .infinity)
 
-            Button(action: { set.completed.toggle() }) {
+            Button(action: {
+                set.completed.toggle()
+                if set.completed {
+                    onComplete?()
+                }
+            }) {
                 Image(systemName: set.completed ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 24))
                     .foregroundColor(set.completed ? Theme.primary : Theme.muted)

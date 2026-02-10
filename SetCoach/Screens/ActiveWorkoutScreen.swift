@@ -20,7 +20,10 @@ struct ActiveWorkoutScreen: View {
     @State private var showMetrics = false
     @State private var restTimerEnabled = false
     @State private var restDuration = 90
+    @State private var showRestTimer = false
     @State private var expandedExerciseId: String?
+
+    private let restDurations = [60, 90, 120, 180]
 
     private var lastSession: WorkoutSession? {
         sessions
@@ -43,6 +46,26 @@ struct ActiveWorkoutScreen: View {
             VStack(spacing: 0) {
                 headerView
                 progressBar
+                if restTimerEnabled {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(restDurations, id: \.self) { duration in
+                                Button(action: { restDuration = duration }) {
+                                    Text(formatRestDuration(duration))
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundColor(restDuration == duration ? Theme.primaryForeground : Theme.foreground)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(restDuration == duration ? Theme.primary : Theme.secondary)
+                                        .cornerRadius(20)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                    }
+                    .background(Theme.card)
+                }
                 bodyMetricsSection
                 ScrollView {
                     LazyVStack(spacing: 12) {
@@ -52,16 +75,24 @@ struct ActiveWorkoutScreen: View {
                                 isExpanded: expandedExerciseId == workoutExercises[index].id,
                                 onToggleExpand: {
                                     expandedExerciseId = expandedExerciseId == workoutExercises[index].id ? nil : workoutExercises[index].id
+                                },
+                                onSetComplete: {
+                                    if restTimerEnabled {
+                                        showRestTimer = true
+                                    }
                                 }
                             )
                         }
                     }
-                    
-                    finishButton
-                        .padding()
-                        .padding(.bottom, 80)
-
+                    .padding()
+                    .padding(.bottom, 80)
                 }
+                finishButton
+            }
+        }
+        .overlay {
+            if showRestTimer {
+                RestTimerOverlay(isPresented: $showRestTimer, duration: restDuration)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -203,6 +234,16 @@ struct ActiveWorkoutScreen: View {
     private func startTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             elapsedSeconds += 1
+        }
+    }
+
+    private func formatRestDuration(_ seconds: Int) -> String {
+        if seconds < 60 {
+            return "\(seconds)s"
+        } else if seconds % 60 == 0 {
+            return "\(seconds / 60)m"
+        } else {
+            return "\(seconds / 60)m \(seconds % 60)s"
         }
     }
 
