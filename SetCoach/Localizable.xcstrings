@@ -34,6 +34,7 @@
       }
     },
     "%.1f kg × %d" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -270,6 +271,22 @@
         }
       }
     },
+    "BODY WEIGHT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BODY WEIGHT"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TJELESNA TEŽINA"
+          }
+        }
+      }
+    },
     "Body Weight (kg)" : {
       "localizations" : {
         "en" : {
@@ -400,6 +417,22 @@
         }
       }
     },
+    "DATE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DATE"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DATUM"
+          }
+        }
+      }
+    },
     "Delete" : {
       "localizations" : {
         "en" : {
@@ -476,6 +509,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gotovo"
+          }
+        }
+      }
+    },
+    "DURATION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DURATION"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TRAJANJE"
           }
         }
       }
@@ -944,6 +993,7 @@
       }
     },
     "Session" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -976,6 +1026,7 @@
       }
     },
     "Set %d" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1115,6 +1166,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Povijest treninga"
+          }
+        }
+      }
+    },
+    "WAIST" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WAIST"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRUK"
           }
         }
       }

@@ -56,10 +56,12 @@ struct ActiveWorkoutScreen: View {
                             )
                         }
                     }
-                    .padding()
-                    .padding(.bottom, 80)
+                    
+                    finishButton
+                        .padding()
+                        .padding(.bottom, 80)
+
                 }
-                finishButton
             }
         }
         .navigationBarBackButtonHidden(true)
