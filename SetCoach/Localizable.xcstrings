@@ -303,17 +303,21 @@
         }
       }
     },
-    "Continue" : {
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue" } }, "hr" : { "stringUnit" : { "state" : "translated", "value" : "Nastavi" } } }
-    },
-    "Skip" : {
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Skip" } }, "hr" : { "stringUnit" : { "state" : "translated", "value" : "Preskoči" } } }
-    },
-    "Rest timer" : {
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Rest timer" } }, "hr" : { "stringUnit" : { "state" : "translated", "value" : "Odmor" } } }
-    },
-    "Time's up!" : {
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Time's up!" } }, "hr" : { "stringUnit" : { "state" : "translated", "value" : "Vrijeme je isteklo!" } } }
+    "Body Weight Trend" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Body Weight Trend"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trend tjelesne težine"
+          }
+        }
+      }
     },
     "Cancel" : {
       "localizations" : {
@@ -327,6 +331,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Odustani"
+          }
+        }
+      }
+    },
+    "CHANGE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CHANGE"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PROMJENA"
           }
         }
       }
@@ -412,6 +432,22 @@
         }
       }
     },
+    "Continue" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastavi"
+          }
+        }
+      }
+    },
     "Create Program" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -428,6 +464,25 @@
           }
         }
       }
+    },
+    "CURRENT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CURRENT"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TRENUTNO"
+          }
+        }
+      }
+    },
+    "Date" : {
+
     },
     "DATE" : {
       "localizations" : {
@@ -605,6 +660,22 @@
         }
       }
     },
+    "Enter body weight and waist during workouts to track trends" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter body weight and waist during workouts to track trends"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unesi tjelesnu težinu i struk tijekom treninga za praćenje trendova"
+          }
+        }
+      }
+    },
     "Exercise" : {
       "localizations" : {
         "en" : {
@@ -687,6 +758,22 @@
         }
       }
     },
+    "Heaviest Set" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heaviest Set"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Najteža serija"
+          }
+        }
+      }
+    },
     "History" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -723,6 +810,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maks. pon."
+          }
+        }
+      }
+    },
+    "Max Weight Per Session" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Max Weight Per Session"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maks. težina po treningu"
           }
         }
       }
@@ -787,6 +890,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Još nema povijesti"
+          }
+        }
+      }
+    },
+    "No metrics data yet" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No metrics data yet"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Još nema podataka o mjerama"
           }
         }
       }
@@ -987,6 +1106,22 @@
         }
       }
     },
+    "Rest timer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rest timer"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odmor"
+          }
+        }
+      }
+    },
     "Save Changes" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1005,7 +1140,6 @@
       }
     },
     "Session" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1102,6 +1236,22 @@
         }
       }
     },
+    "Skip" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preskoči"
+          }
+        }
+      }
+    },
     "Start Workout" : {
       "localizations" : {
         "en" : {
@@ -1130,6 +1280,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dodirni + za kreiranje prvog programa"
+          }
+        }
+      }
+    },
+    "Time's up!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time's up!"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vrijeme je isteklo!"
+          }
+        }
+      }
+    },
+    "Total Volume (kg × reps)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total Volume (kg × reps)"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukupni volumen (kg × pon.)"
           }
         }
       }
@@ -1182,6 +1364,28 @@
         }
       }
     },
+    "Volume" : {
+
+    },
+    "Volume Over Time" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volume Over Time"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volumen kroz vrijeme"
+          }
+        }
+      }
+    },
+    "Waist" : {
+
+    },
     "WAIST" : {
       "localizations" : {
         "en" : {
@@ -1213,6 +1417,25 @@
           }
         }
       }
+    },
+    "Waist Circumference Trend" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waist Circumference Trend"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trend opsega struka"
+          }
+        }
+      }
+    },
+    "Weight" : {
+
     },
     "Weight (kg)" : {
       "localizations" : {

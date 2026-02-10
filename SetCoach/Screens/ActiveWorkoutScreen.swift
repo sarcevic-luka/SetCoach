@@ -23,7 +23,7 @@ struct ActiveWorkoutScreen: View {
     @State private var showRestTimer = false
     @State private var expandedExerciseId: String?
 
-    private let restDurations = [60, 90, 120, 180]
+    private let restDurations = [30, 45, 60, 90, 120, 150, 180, 240]
 
     private var lastSession: WorkoutSession? {
         sessions
@@ -66,7 +66,9 @@ struct ActiveWorkoutScreen: View {
                     }
                     .background(Theme.card)
                 }
+
                 bodyMetricsSection
+
                 ScrollView {
                     LazyVStack(spacing: 12) {
                         ForEach(workoutExercises.indices, id: \.self) { index in
@@ -87,6 +89,7 @@ struct ActiveWorkoutScreen: View {
                     .padding()
                     .padding(.bottom, 80)
                 }
+                
                 finishButton
             }
         }

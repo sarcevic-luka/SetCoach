@@ -55,6 +55,16 @@ struct HistoryScreen: View {
             .navigationDestination(for: WorkoutSession.self) { session in
                 SessionDetailScreen(session: session)
             }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink {
+                        BodyMetricsChartScreen()
+                    } label: {
+                        Image(systemName: "chart.xyaxis.line")
+                            .foregroundColor(Theme.primary)
+                    }
+                }
+            }
         }
     }
 }

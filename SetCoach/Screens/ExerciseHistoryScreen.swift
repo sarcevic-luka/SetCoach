@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Charts
 
 struct ExerciseHistoryScreen: View {
     @Query private var allSessions: [WorkoutSession]
@@ -68,6 +69,110 @@ struct ExerciseHistoryScreen: View {
                                     Text(String(localized: "reps"))
                                         .font(.system(size: 20, weight: .semibold))
                                         .foregroundColor(Theme.primary)
+                                }
+                            }
+                        }
+                    }
+
+                    if !exerciseSessions.isEmpty {
+                        CardView {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text(String(localized: "Volume Over Time"))
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(Theme.muted)
+                                    .textCase(.uppercase)
+                                Chart {
+                                    ForEach(Array(exerciseSessions.reversed().enumerated()), id: \.element.session.id) { index, item in
+                                        let totalVolume = item.exercise.sets.reduce(0.0) { $0 + ($1.weight * Double($1.reps)) }
+                                        LineMark(
+                                            x: .value(String(localized: "Session"), index),
+                                            y: .value(String(localized: "Volume"), totalVolume)
+                                        )
+                                        .foregroundStyle(Theme.primary)
+                                        .interpolationMethod(.catmullRom)
+                                        PointMark(
+                                            x: .value(String(localized: "Session"), index),
+                                            y: .value(String(localized: "Volume"), totalVolume)
+                                        )
+                                        .foregroundStyle(Theme.primary)
+                                    }
+                                }
+                                .frame(height: 180)
+                                .chartXAxis {
+                                    AxisMarks(values: .automatic) { _ in
+                                        AxisValueLabel()
+                                            .foregroundStyle(Theme.muted)
+                                    }
+                                }
+                                .chartYAxis {
+                                    AxisMarks(values: .automatic) { _ in
+                                        AxisGridLine()
+                                            .foregroundStyle(Theme.border)
+                                        AxisValueLabel()
+                                            .foregroundStyle(Theme.muted)
+                                    }
+                                }
+                                HStack(spacing: 20) {
+                                    Label {
+                                        Text(String(localized: "Total Volume (kg × reps)"))
+                                            .font(.system(size: 12))
+                                            .foregroundColor(Theme.muted)
+                                    } icon: {
+                                        Circle()
+                                            .fill(Theme.primary)
+                                            .frame(width: 8, height: 8)
+                                    }
+                                }
+                            }
+                        }
+
+                        CardView {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text(String(localized: "Max Weight Per Session"))
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(Theme.muted)
+                                    .textCase(.uppercase)
+                                Chart {
+                                    ForEach(Array(exerciseSessions.reversed().enumerated()), id: \.element.session.id) { index, item in
+                                        let maxWeight = item.exercise.sets.map(\.weight).max() ?? 0
+                                        BarMark(
+                                            x: .value(String(localized: "Session"), index),
+                                            y: .value(String(localized: "Weight"), maxWeight)
+                                        )
+                                        .foregroundStyle(Theme.blue)
+                                        .cornerRadius(4)
+                                    }
+                                }
+                                .frame(height: 180)
+                                .chartXAxis {
+                                    AxisMarks(values: .automatic) { _ in
+                                        AxisValueLabel()
+                                            .foregroundStyle(Theme.muted)
+                                    }
+                                }
+                                .chartYAxis {
+                                    AxisMarks(values: .automatic) { value in
+                                        AxisGridLine()
+                                            .foregroundStyle(Theme.border)
+                                        AxisValueLabel {
+                                            if let weight = value.as(Double.self) {
+                                                Text(String(format: "%.0f kg", weight))
+                                                    .font(.system(size: 11))
+                                                    .foregroundStyle(Theme.muted)
+                                            }
+                                        }
+                                    }
+                                }
+                                HStack(spacing: 20) {
+                                    Label {
+                                        Text(String(localized: "Heaviest Set"))
+                                            .font(.system(size: 12))
+                                            .foregroundColor(Theme.muted)
+                                    } icon: {
+                                        RoundedRectangle(cornerRadius: 2)
+                                            .fill(Theme.blue)
+                                            .frame(width: 12, height: 8)
+                                    }
                                 }
                             }
                         }
