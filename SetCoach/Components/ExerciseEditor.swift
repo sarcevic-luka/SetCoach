@@ -4,6 +4,8 @@ struct ExerciseEditor: View {
     @Binding var exercise: ExerciseEdit
     let onDelete: () -> Void
 
+    @State private var showPicker = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -21,12 +23,43 @@ struct ExerciseEditor: View {
                 }
             }
 
-            TextField("Exercise name", text: $exercise.name)
-                .font(.system(size: 14))
-                .foregroundColor(Theme.foreground)
-                .padding(10)
+            Button(action: { showPicker = true }) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(exercise.name.isEmpty ? "Tap to select exercise" : exercise.name)
+                            .font(.system(size: 15, weight: exercise.name.isEmpty ? .regular : .semibold))
+                            .foregroundColor(exercise.name.isEmpty ? Theme.muted : Theme.foreground)
+                        if !exercise.name.isEmpty {
+                            Text("\(exercise.targetSets) sets · \(exercise.targetRepsMin)-\(exercise.targetRepsMax) reps")
+                                .font(.system(size: 12))
+                                .foregroundColor(Theme.muted)
+                        }
+                    }
+                    Spacer()
+                    Image(systemName: exercise.name.isEmpty ? "chevron.down" : "pencil")
+                        .font(.system(size: 14))
+                        .foregroundColor(Theme.muted)
+                }
+                .padding(12)
                 .background(Theme.secondary)
                 .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(
+                            exercise.name.isEmpty ? Color.clear : Theme.primary.opacity(0.4),
+                            lineWidth: 1.5
+                        )
+                )
+            }
+            .sheet(isPresented: $showPicker) {
+                ExercisePickerSheet(isPresented: $showPicker) { selected in
+                    exercise.name = selected.name
+                    exercise.targetSets = selected.defaultSets
+                    exercise.targetRepsMin = selected.defaultRepsMin
+                    exercise.targetRepsMax = selected.defaultRepsMax
+                    exercise.notes = selected.defaultNotes ?? ""
+                }
+            }
 
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
