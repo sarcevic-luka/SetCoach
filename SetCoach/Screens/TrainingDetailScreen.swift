@@ -3,24 +3,19 @@ import SwiftData
 
 struct TrainingDetailScreen: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var sessions: [WorkoutSession]
-    let program: Program
-    let trainingDay: TrainingDay
+    @StateObject private var viewModel: TrainingDetailViewModel
 
-    private var lastSession: WorkoutSession? {
-        sessions
-            .filter { $0.trainingDayId == trainingDay.id && $0.completed }
-            .sorted { $0.date > $1.date }
-            .first
+    init(program: Program, trainingDay: TrainingDay) {
+        _viewModel = StateObject(wrappedValue: TrainingDetailViewModel(program: program, trainingDay: trainingDay))
     }
 
     var body: some View {
         ZStack {
             Theme.background.ignoresSafeArea()
             VStack(spacing: 0) {
-                if let last = lastSession {
+                if let last = viewModel.lastSession {
                     HStack(spacing: 16) {
-                        Label(formatDate(last.date), systemImage: "calendar")
+                        Label(viewModel.formatDate(last.date), systemImage: "calendar")
                         Label(String(format: String(localized: "%d min"), last.duration), systemImage: "clock")
                         Spacer()
                     }
@@ -32,10 +27,10 @@ struct TrainingDetailScreen: View {
 
                 ScrollView {
                     LazyVStack(spacing: 12) {
-                        ForEach(trainingDay.exercises) { exercise in
+                        ForEach(viewModel.trainingDay.exercises) { exercise in
                             ExerciseCard(
                                 exercise: exercise,
-                                lastSessionExercise: lastSession?.exercises.first { $0.exerciseTemplateId == exercise.id }
+                                lastSessionExercise: viewModel.lastSession?.exercises.first { $0.exerciseTemplateId == exercise.id }
                             )
                         }
                     }
@@ -44,7 +39,7 @@ struct TrainingDetailScreen: View {
                 }
 
                 VStack {
-                    NavigationLink(value: AppRoute.activeWorkout(program, trainingDay)) {
+                    NavigationLink(value: AppRoute.activeWorkout(viewModel.program, viewModel.trainingDay)) {
                         HStack {
                             Image(systemName: "play.fill")
                             Text("Start Workout")
@@ -61,15 +56,11 @@ struct TrainingDetailScreen: View {
                 .background(Theme.background.opacity(0.95))
             }
         }
-        .navigationTitle(trainingDay.name)
+        .navigationTitle(viewModel.trainingDay.name)
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.locale = Locale.current
-        return formatter.string(from: date)
+        .onAppear {
+            viewModel.configure(with: modelContext)
+        }
     }
 }
 
@@ -78,8 +69,9 @@ struct TrainingDetailScreen: View {
     let day = TrainingDay(name: "Push Day", exercises: [
         ExerciseTemplate(name: "Bench Press", targetSets: 4, targetRepsMin: 6, targetRepsMax: 8, notes: "Pause at bottom")
     ])
-    return NavigationStack {
+    let container = try! ModelContainer(for: Program.self, TrainingDay.self, ExerciseTemplate.self, WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self)
+    NavigationStack {
         TrainingDetailScreen(program: program, trainingDay: day)
     }
-    .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self, WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self], inMemory: true)
+    .modelContainer(container)
 }
