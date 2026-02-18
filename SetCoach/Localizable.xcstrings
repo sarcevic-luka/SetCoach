@@ -688,6 +688,7 @@
       }
     },
     "Edit Program" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -907,6 +908,7 @@
       }
     },
     "New Program" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
