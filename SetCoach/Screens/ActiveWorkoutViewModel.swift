@@ -46,14 +46,14 @@ final class ActiveWorkoutViewModel {
         trainingDay: TrainingDay,
         lastSession: WorkoutSession?,
         modelContext: ModelContext,
-        idleTimerService: IdleTimerManaging = LiveIdleTimerService(),
+        idleTimerService: IdleTimerManaging? = nil,
         onFinish: @escaping () -> Void
     ) {
         self.program = program
         self.trainingDay = trainingDay
         self.lastSession = lastSession
         self.modelContext = modelContext
-        self.idleTimerService = idleTimerService
+        self.idleTimerService = idleTimerService ?? LiveIdleTimerService()
         self.onFinish = onFinish
     }
 
