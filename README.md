@@ -43,25 +43,27 @@ SetCoach is built with modern Swift and SwiftUI, following best practices for iO
 
 ### Architecture
 
+The app uses **Clean Architecture** with **MVVM** in the presentation layer. Folder structure follows Domain → Data → Presentation.
+
 ```
 ┌─────────────────────────────────────────────────────┐
-│                      Views                           │
-│  (SwiftUI, declarative UI, minimal state)            │
+│              Presentation (Views, ViewModels)         │
+│  SwiftUI, @Observable, Router/AppRoute               │
 ├─────────────────────────────────────────────────────┤
-│                   ViewModels                         │
-│  (@Observable, @MainActor, business logic)           │
+│              Domain (Entities, UseCases)             │
+│  Framework-agnostic business logic                   │
 ├─────────────────────────────────────────────────────┤
-│              Services & Utilities                    │
-│  (IdleTimerService, SeedData, Theme)                 │
+│              Data (Repositories, Models, Mappers)     │
+│  SwiftData persistence, SeedData, ExerciseLibrary    │
 ├─────────────────────────────────────────────────────┤
 │                Apple Frameworks                     │
-│  (SwiftData, SwiftUI, Charts)                       │
+│  SwiftData, SwiftUI, Charts                          │
 └─────────────────────────────────────────────────────┘
 ```
 
 ### Key Technical Highlights
 
-* **MVVM Architecture** — Clean separation with `@Observable` ViewModels
+* **Clean Architecture + MVVM** — Domain/Data/Presentation layers; `@Observable` ViewModels in UI layer
 * **Swift Concurrency** — Async/await, `@MainActor` for ViewModels
 * **Protocol-Oriented Services** — `IdleTimerManaging` for framework isolation
 * **Dependency Injection** — Dependencies passed explicitly, no singletons in Views
@@ -83,54 +85,108 @@ SetCoach is built with modern Swift and SwiftUI, following best practices for iO
 
 ```
 SetCoach/
-├── SetCoachApp.swift           # App entry, model container
-├── ContentView.swift           # Tab navigation, Programs / History
+├── SetCoachApp.swift            # App entry, SwiftData model container
+├── ContentView.swift            # Tab bar (Programs / History), Add Program sheet
+│
+├── App/
+│   └── Dependencies.swift      # DI: repositories, use cases, router
+│
+├── Core/
+│   ├── Theme/
+│   │   └── Theme.swift         # Colors, semantic styling
+│   └── Services/
+│       └── IdleTimerService.swift
+│
+├── Data/                        # Data layer (SwiftData, persistence)
+│   ├── DataSources/
+│   │   ├── SeedData.swift      # Default programs (seed when empty or add missing)
+│   │   └── ExerciseLibrary.swift
+│   ├── Mappers/                # Domain ↔ SwiftData model mapping
+│   │   ├── ProgramMapper.swift
+│   │   ├── TrainingDayMapper.swift
+│   │   ├── ExerciseTemplateMapper.swift
+│   │   ├── WorkoutSessionMapper.swift
+│   │   ├── WorkoutExerciseMapper.swift
+│   │   └── ExerciseSetMapper.swift
+│   ├── Models/                 # SwiftData @Model types
+│   │   ├── ProgramModel.swift
+│   │   ├── TrainingDayModel.swift
+│   │   ├── ExerciseTemplateModel.swift
+│   │   ├── WorkoutSessionModel.swift
+│   │   ├── WorkoutExerciseModel.swift
+│   │   └── ExerciseSetModel.swift
+│   └── Repositories/
+│       ├── ProgramRepository.swift
+│       └── WorkoutSessionRepository.swift
+│
+├── Domain/                      # Business logic, framework-agnostic
+│   ├── Entities/
+│   │   ├── Program.swift
+│   │   ├── TrainingDay.swift
+│   │   ├── ExerciseTemplate.swift
+│   │   ├── ProgramImage.swift
+│   │   ├── WorkoutSession.swift
+│   │   ├── WorkoutExercise.swift
+│   │   └── ExerciseSet.swift
+│   ├── RepositoryProtocols/
+│   │   ├── ProgramRepositoryProtocol.swift
+│   │   └── WorkoutSessionRepositoryProtocol.swift
+│   └── UseCases/
+│       ├── LoadProgramsUseCase.swift
+│       ├── SaveProgramUseCase.swift
+│       ├── DeleteProgramUseCase.swift
+│       ├── LoadWorkoutSessionsUseCase.swift
+│       ├── SaveWorkoutSessionUseCase.swift
+│       ├── CreateManualWorkoutSessionUseCase.swift
+│       ├── GetLastWorkoutSessionUseCase.swift
+│       ├── InitializeWorkoutExercisesUseCase.swift
+│       ├── CalculateWorkoutStatsUseCase.swift
+│       └── ...
+│
 ├── Navigation/
-│   └── AppRoute.swift         # Route enum for navigation
-├── Models/
-│   ├── Program.swift          # Training program
-│   ├── TrainingDay.swift     # Day within a program
-│   ├── ExerciseTemplate.swift # Exercise definition
-│   ├── WorkoutSession.swift   # Completed workout
-│   ├── WorkoutExercise.swift  # Exercise instance in session
-│   └── ExerciseSet.swift      # Set (weight, reps)
-├── Data/
-│   └── ExerciseLibrary.swift  # 200 exercises by muscle group
-├── Screens/
-│   ├── HomeScreen.swift
-│   ├── HomeViewModel.swift
-│   ├── ProgramDetailScreen.swift
-│   ├── TrainingDetailScreen.swift
-│   ├── TrainingDetailViewModel.swift
-│   ├── ActiveWorkoutScreen.swift
-│   ├── ActiveWorkoutViewModel.swift
-│   ├── AddEditProgramScreen.swift
-│   ├── AddEditProgramViewModel.swift
-│   ├── HistoryScreen.swift
-│   ├── HistoryViewModel.swift
-│   ├── SessionDetailScreen.swift
-│   ├── ExerciseHistoryScreen.swift
-│   ├── ExerciseHistoryViewModel.swift
-│   ├── BodyMetricsChartScreen.swift
-│   └── BodyMetricsChartViewModel.swift
-├── Components/
-│   ├── ProgramCard.swift
-│   ├── TrainingDayCard.swift
-│   ├── ExerciseCard.swift
-│   ├── ActiveExerciseCard.swift
-│   ├── ExerciseEditor.swift
-│   ├── ExercisePickerSheet.swift
-│   ├── SessionCard.swift
-│   ├── ExerciseHistoryCard.swift
-│   ├── SetRow.swift
-│   ├── RestTimerOverlay.swift
-│   └── ...
-├── Services/
-│   └── IdleTimerService.swift # Screen wake lock (framework isolation)
-├── Utilities/
-│   ├── Theme.swift            # Colors, corner radius
-│   └── SeedData.swift         # Sample programs on first launch
-└── Localizable.xcstrings       # en, hr
+│   ├── AppRoute.swift          # Navigation destination enum
+│   └── Router.swift            # NavigationPath, push/pop
+│
+└── Presentation/               # UI layer (SwiftUI + @Observable ViewModels)
+    ├── ViewModels/
+    │   ├── HomeViewModel.swift
+    │   ├── HistoryViewModel.swift
+    │   ├── AddEditProgramViewModel.swift
+    │   ├── TrainingDetailViewModel.swift
+    │   ├── ActiveWorkoutViewModel.swift
+    │   ├── SessionExerciseCardViewModel.swift
+    │   ├── ExerciseHistoryViewModel.swift
+    │   ├── BodyMetricsChartViewModel.swift
+    │   └── ManualWorkoutEntryViewModel.swift
+    └── Views/
+        ├── Screens/
+        │   ├── HomeScreen.swift
+        │   ├── HistoryScreen.swift
+        │   ├── ProgramDetailScreen.swift
+        │   ├── AddEditProgramScreen.swift
+        │   ├── TrainingDetailScreen.swift
+        │   ├── ActiveWorkoutScreen.swift
+        │   ├── SessionDetailScreen.swift
+        │   ├── SessionExerciseCard.swift
+        │   ├── ExerciseHistoryScreen.swift
+        │   ├── BodyMetricsChartScreen.swift
+        │   └── ManualWorkoutEntryScreen.swift
+        └── Components/
+            ├── ProgramCard.swift
+            ├── ProgramImagePicker.swift
+            ├── ProgramSelectorSheet.swift
+            ├── TrainingDayCard.swift
+            ├── TrainingDayEditor.swift
+            ├── ExerciseCard.swift
+            ├── ExerciseEditor.swift
+            ├── ExercisePickerSheet.swift
+            ├── ExerciseHistoryCard.swift
+            ├── ActiveExerciseCard.swift
+            ├── SetRow.swift
+            ├── StepperView.swift
+            ├── RestTimerOverlay.swift
+            ├── SessionCard.swift
+            └── ...
 ```
 
 ---
@@ -140,7 +196,7 @@ SetCoach/
 ### Requirements
 
 * iOS 17.0+
-* Xcode 15.0+
+* Xcode 16.0+
 
 ### Setup
 
@@ -150,7 +206,7 @@ SetCoach/
 
 ### First Launch
 
-The app seeds sample programs (Push Pull Legs, Full Body) on first launch if the database is empty. You can edit or delete them and create your own.
+The app seeds default programs (e.g. Push Pull Legs, Upper Lower 4-Day, Beginner Full Body, Strength 5x5, Glute Focus, Fat Loss Conditioning, Powerbuilding) when the database is empty, and adds any missing defaults if you already have data. You can edit or delete them and create your own.
 
 ---
 
