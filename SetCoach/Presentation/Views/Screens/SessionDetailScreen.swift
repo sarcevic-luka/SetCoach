@@ -137,4 +137,3 @@ struct SessionDetailScreen: View {
         SessionDetailScreen(session: session)
     }
 }
-

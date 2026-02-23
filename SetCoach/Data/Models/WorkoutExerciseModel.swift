@@ -38,28 +38,4 @@ final class WorkoutExerciseModel {
         self.progressDirectionRaw = progressDirection?.rawValue
         self.difficultyRaw = difficulty?.rawValue
     }
-
-    convenience init(from entity: WorkoutExercise) {
-        self.init(
-            id: entity.id,
-            exerciseTemplateId: entity.exerciseTemplateId,
-            name: entity.name,
-            sets: entity.sets.map { ExerciseSetModel(from: $0) },
-            notes: entity.notes,
-            progressDirection: entity.progressDirection,
-            difficulty: entity.difficulty
-        )
-    }
-
-    func toDomain() -> WorkoutExercise {
-        WorkoutExercise(
-            id: id,
-            exerciseTemplateId: exerciseTemplateId,
-            name: name,
-            sets: sets.map { $0.toDomain() },
-            notes: notes,
-            progressDirection: progressDirection,
-            difficulty: difficulty
-        )
-    }
 }

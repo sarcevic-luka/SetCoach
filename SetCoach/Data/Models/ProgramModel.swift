@@ -22,24 +22,4 @@ final class ProgramModel {
         self.trainingDays = trainingDays
         self.createdAt = createdAt
     }
-
-    convenience init(from entity: Program) {
-        self.init(
-            id: entity.id,
-            name: entity.name,
-            programDescription: entity.programDescription,
-            trainingDays: entity.trainingDays.map { TrainingDayModel(from: $0) },
-            createdAt: entity.createdAt
-        )
-    }
-
-    func toDomain() -> Program {
-        Program(
-            id: id,
-            name: name,
-            programDescription: programDescription,
-            trainingDays: trainingDays.map { $0.toDomain() },
-            createdAt: createdAt
-        )
-    }
 }

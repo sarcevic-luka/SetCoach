@@ -40,36 +40,4 @@ final class WorkoutSessionModel {
         self.waistCircumference = waistCircumference
         self.completed = completed
     }
-
-    convenience init(from entity: WorkoutSession) {
-        self.init(
-            id: entity.id,
-            programId: entity.programId,
-            programName: entity.programName,
-            trainingDayId: entity.trainingDayId,
-            trainingDayName: entity.trainingDayName,
-            date: entity.date,
-            duration: entity.duration,
-            exercises: entity.exercises.map { WorkoutExerciseModel(from: $0) },
-            bodyWeight: entity.bodyWeight,
-            waistCircumference: entity.waistCircumference,
-            completed: entity.completed
-        )
-    }
-
-    func toDomain() -> WorkoutSession {
-        WorkoutSession(
-            id: id,
-            programId: programId,
-            programName: programName,
-            trainingDayId: trainingDayId,
-            trainingDayName: trainingDayName,
-            date: date,
-            duration: duration,
-            exercises: exercises.map { $0.toDomain() },
-            bodyWeight: bodyWeight,
-            waistCircumference: waistCircumference,
-            completed: completed
-        )
-    }
 }

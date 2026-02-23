@@ -104,7 +104,7 @@ enum SeedData {
     }
 
     static func insertProgram(_ program: Program, into context: ModelContext) {
-        let programModel = ProgramModel(from: program)
+        let programModel = ProgramMapper.toModel(from: program)
         for day in programModel.trainingDays {
             for ex in day.exercises {
                 context.insert(ex)

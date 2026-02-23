@@ -52,16 +52,16 @@ struct ActiveWorkoutScreen: View {
         }
         .onAppear {
             guard let dependencies, viewModel == nil else { return }
-            let sessions = (try? dependencies.makeLoadWorkoutSessionsUseCase().execute(sortByDateDescending: true)) ?? []
-            let lastSession = sessions
-                .filter { $0.trainingDayId == trainingDay.id && $0.completed }
-                .sorted { $0.date > $1.date }
-                .first
+            let lastSession = try? dependencies.makeGetLastWorkoutSessionUseCase().execute(for: trainingDay.id)
             let vm = ActiveWorkoutViewModel(
                 program: program,
                 trainingDay: trainingDay,
                 lastSession: lastSession,
                 saveWorkoutSessionUseCase: dependencies.makeSaveWorkoutSessionUseCase(),
+                determineProgressUseCase: dependencies.makeDetermineProgressDirectionUseCase(),
+                calculateStatsUseCase: dependencies.makeCalculateWorkoutStatsUseCase(),
+                formatDurationUseCase: dependencies.makeFormatDurationUseCase(),
+                initializeExercisesUseCase: dependencies.makeInitializeWorkoutExercisesUseCase(),
                 onFinish: { dismiss() }
             )
             vm.start()

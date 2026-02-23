@@ -2,9 +2,14 @@ import Foundation
 import SwiftUI
 import os
 
+/// ViewModel for active workout session
+/// Manages workout state and coordinates between Use Cases
 @MainActor
 @Observable
 final class ActiveWorkoutViewModel {
+
+    // MARK: - Published State
+
     var workoutExercises: [WorkoutExercise] = []
     var elapsedSeconds = 0
     var bodyWeight: Double = 82.0
@@ -13,32 +18,43 @@ final class ActiveWorkoutViewModel {
     var restDuration = 90
     var showRestTimer = false
 
+    // MARK: - Dependencies
+
     private var timer: Timer?
     private let program: Program
     private let trainingDay: TrainingDay
     private let lastSession: WorkoutSession?
     private let saveWorkoutSessionUseCase: SaveWorkoutSessionUseCase
     private let idleTimerService: IdleTimerManaging
+    private let determineProgressUseCase: DetermineProgressDirectionUseCase
+    private let calculateStatsUseCase: CalculateWorkoutStatsUseCase
+    private let formatDurationUseCase: FormatDurationUseCase
+    private let initializeExercisesUseCase: InitializeWorkoutExercisesUseCase
     private let onFinish: () -> Void
+
+    // MARK: - Constants
 
     static let restDurations = [30, 45, 60, 90, 120, 150, 180, 240]
 
+    // MARK: - Computed Properties
+
     var completedSets: Int {
-        workoutExercises.flatMap(\.sets).filter(\.completed).count
+        calculateStatsUseCase.executeSetStats(for: workoutExercises).completed
     }
 
     var totalSets: Int {
-        workoutExercises.flatMap(\.sets).count
+        calculateStatsUseCase.executeSetStats(for: workoutExercises).total
     }
 
     var progressPercentage: Double {
-        guard totalSets > 0 else { return 0 }
-        return Double(completedSets) / Double(totalSets)
+        calculateStatsUseCase.executeProgressPercentage(for: workoutExercises)
     }
 
     var trainingDayName: String {
         trainingDay.name
     }
+
+    // MARK: - Initialization
 
     init(
         program: Program,
@@ -46,6 +62,10 @@ final class ActiveWorkoutViewModel {
         lastSession: WorkoutSession?,
         saveWorkoutSessionUseCase: SaveWorkoutSessionUseCase,
         idleTimerService: IdleTimerManaging? = nil,
+        determineProgressUseCase: DetermineProgressDirectionUseCase,
+        calculateStatsUseCase: CalculateWorkoutStatsUseCase,
+        formatDurationUseCase: FormatDurationUseCase,
+        initializeExercisesUseCase: InitializeWorkoutExercisesUseCase,
         onFinish: @escaping () -> Void
     ) {
         self.program = program
@@ -53,8 +73,14 @@ final class ActiveWorkoutViewModel {
         self.lastSession = lastSession
         self.saveWorkoutSessionUseCase = saveWorkoutSessionUseCase
         self.idleTimerService = idleTimerService ?? LiveIdleTimerService()
+        self.determineProgressUseCase = determineProgressUseCase
+        self.calculateStatsUseCase = calculateStatsUseCase
+        self.formatDurationUseCase = formatDurationUseCase
+        self.initializeExercisesUseCase = initializeExercisesUseCase
         self.onFinish = onFinish
     }
+
+    // MARK: - Public Methods
 
     func start() {
         initializeWorkout()
@@ -77,61 +103,44 @@ final class ActiveWorkoutViewModel {
 
     func finishWorkout() {
         updateProgressDirections()
+
         let session = WorkoutSession(
             programId: program.id,
             programName: program.name,
             trainingDayId: trainingDay.id,
             trainingDayName: trainingDay.name,
             date: Date(),
-            duration: elapsedSeconds / 60,
+            duration: formatDurationUseCase.executeAsMinutes(seconds: elapsedSeconds),
             exercises: workoutExercises,
             bodyWeight: bodyWeight,
             waistCircumference: waistCircumference,
             completed: true
         )
+
         do {
             try saveWorkoutSessionUseCase.execute(session)
         } catch {
             logger.error("Failed to save workout session: \(error.localizedDescription)")
         }
+
         onFinish()
     }
 
     func formatRestDuration(_ seconds: Int) -> String {
-        if seconds < 60 {
-            return "\(seconds)s"
-        } else if seconds % 60 == 0 {
-            return "\(seconds / 60)m"
-        } else {
-            return "\(seconds / 60)m \(seconds % 60)s"
-        }
+        formatDurationUseCase.executeAsRestDuration(seconds: seconds)
     }
 
     func formatElapsedTime() -> String {
-        let minutes = elapsedSeconds / 60
-        let seconds = elapsedSeconds % 60
-        return String(format: "%02d:%02d", minutes, seconds)
+        formatDurationUseCase.executeAsElapsedTime(seconds: elapsedSeconds)
     }
 
+    // MARK: - Private Methods
+
     private func initializeWorkout() {
-        workoutExercises = trainingDay.exercises.map { template in
-            let lastExercise = lastSession?.exercises.first { $0.exerciseTemplateId == template.id }
-            let sets = (1...template.targetSets).map { setNum in
-                let lastSet = lastExercise?.sets.first { $0.setNumber == setNum }
-                return ExerciseSet(
-                    setNumber: setNum,
-                    weight: lastSet?.weight ?? 0,
-                    reps: lastSet?.reps ?? template.targetRepsMin,
-                    completed: false
-                )
-            }
-            return WorkoutExercise(
-                exerciseTemplateId: template.id,
-                name: template.name,
-                sets: sets,
-                notes: template.notes
-            )
-        }
+        workoutExercises = initializeExercisesUseCase.execute(
+            from: trainingDay,
+            lastSession: lastSession
+        )
     }
 
     private func startTimer() {
@@ -141,19 +150,10 @@ final class ActiveWorkoutViewModel {
     }
 
     private func updateProgressDirections() {
-        for i in workoutExercises.indices {
-            let currentVolume = workoutExercises[i].sets.reduce(0.0) { $0 + ($1.weight * Double($1.reps)) }
-            if let lastExercise = lastSession?.exercises.first(where: { $0.exerciseTemplateId == workoutExercises[i].exerciseTemplateId }) {
-                let lastVolume = lastExercise.sets.reduce(0.0) { $0 + ($1.weight * Double($1.reps)) }
-                if currentVolume > lastVolume {
-                    workoutExercises[i].progressDirection = .up
-                } else if currentVolume < lastVolume {
-                    workoutExercises[i].progressDirection = .down
-                } else {
-                    workoutExercises[i].progressDirection = .same
-                }
-            }
-        }
+        workoutExercises = determineProgressUseCase.execute(
+            currentExercises: workoutExercises,
+            previousExercises: lastSession?.exercises
+        )
     }
 }
 

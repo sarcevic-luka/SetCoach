@@ -34,7 +34,6 @@ struct ExercisePickerSheet: View {
             ZStack {
                 Theme.background.ignoresSafeArea()
                 VStack(spacing: 0) {
-                    // Search Bar
                     HStack(spacing: 12) {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(Theme.muted)
@@ -50,7 +49,6 @@ struct ExercisePickerSheet: View {
                     .padding(.top, 8)
                     .padding(.bottom, 12)
 
-                    // Category Pills
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 10) {
                             CategoryChip(
@@ -79,7 +77,6 @@ struct ExercisePickerSheet: View {
                     Divider()
                         .background(Theme.border)
 
-                    // Exercise List
                     if results.isEmpty {
                         emptyState
                     } else {
@@ -149,7 +146,6 @@ struct ExercisePickerSheet: View {
     }
 }
 
-// MARK: - Category Chip
 struct CategoryChip: View {
     let label: String
     let icon: String
@@ -173,7 +169,6 @@ struct CategoryChip: View {
     }
 }
 
-// MARK: - Exercise Row
 struct ExerciseLibraryRow: View {
     let exercise: LibraryExercise
     let onTap: () -> Void

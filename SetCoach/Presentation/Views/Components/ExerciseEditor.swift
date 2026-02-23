@@ -61,7 +61,6 @@ struct ExerciseEditor: View {
                 }
             }
 
-            // 👇 FIXED: flexible columns instead of fixed widths
             HStack(spacing: 8) {
                 stepperView(label: "Sets", value: $exercise.targetSets, min: 1)
                     .frame(maxWidth: .infinity)
@@ -83,7 +82,6 @@ struct ExerciseEditor: View {
         .cornerRadius(8)
     }
 
-    // 👇 NEW: extracted stepper helper
     private func stepperView(label: String, value: Binding<Int>, min: Int) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
@@ -105,7 +103,7 @@ struct ExerciseEditor: View {
                 Text("\(value.wrappedValue)")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(Theme.foreground)
-                    .frame(maxWidth: .infinity)  // flexible instead of fixed 40
+                    .frame(maxWidth: .infinity)
                 Button(action: { value.wrappedValue += 1 }) {
                     Image(systemName: "plus")
                         .font(.system(size: 12))

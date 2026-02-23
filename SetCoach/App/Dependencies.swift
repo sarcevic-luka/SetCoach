@@ -44,4 +44,28 @@ final class Dependencies {
     func makeSaveWorkoutSessionUseCase() -> SaveWorkoutSessionUseCase {
         SaveWorkoutSessionUseCase(workoutSessionRepository: workoutSessionRepository)
     }
+
+    func makeGetLastWorkoutSessionUseCase() -> GetLastWorkoutSessionUseCase {
+        GetLastWorkoutSessionUseCase(loadWorkoutSessionsUseCase: makeLoadWorkoutSessionsUseCase())
+    }
+
+    func makeCalculateTrainingVolumeUseCase() -> CalculateTrainingVolumeUseCase {
+        CalculateTrainingVolumeUseCase()
+    }
+
+    func makeDetermineProgressDirectionUseCase() -> DetermineProgressDirectionUseCase {
+        DetermineProgressDirectionUseCase()
+    }
+
+    func makeInitializeWorkoutExercisesUseCase() -> InitializeWorkoutExercisesUseCase {
+        InitializeWorkoutExercisesUseCase()
+    }
+
+    func makeCalculateWorkoutStatsUseCase() -> CalculateWorkoutStatsUseCase {
+        CalculateWorkoutStatsUseCase()
+    }
+
+    func makeFormatDurationUseCase() -> FormatDurationUseCase {
+        FormatDurationUseCase()
+    }
 }

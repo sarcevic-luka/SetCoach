@@ -14,23 +14,4 @@ final class ExerciseSetModel {
         self.reps = reps
         self.completed = completed
     }
-
-    convenience init(from entity: ExerciseSet) {
-        self.init(
-            setNumber: entity.setNumber,
-            weight: entity.weight,
-            reps: entity.reps,
-            completed: entity.completed
-        )
-    }
-
-    func toDomain() -> ExerciseSet {
-        ExerciseSet(
-            id: UUID(),
-            setNumber: setNumber,
-            weight: weight,
-            reps: reps,
-            completed: completed
-        )
-    }
 }
