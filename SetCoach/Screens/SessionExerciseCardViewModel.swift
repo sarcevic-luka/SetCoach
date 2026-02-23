@@ -1,7 +1,8 @@
-import Combine
+import Foundation
 
-final class SessionExerciseCardViewModel: ObservableObject {
-    @Published private(set) var exercise: WorkoutExercise
+@Observable
+final class SessionExerciseCardViewModel {
+    private(set) var exercise: WorkoutExercise
 
     init(exercise: WorkoutExercise) {
         self.exercise = exercise

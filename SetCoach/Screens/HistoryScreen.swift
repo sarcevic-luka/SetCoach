@@ -2,8 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HistoryScreen: View {
-    @Query(sort: \WorkoutSession.date, order: .reverse)
-    private var sessions: [WorkoutSession]
+    @Environment(\.dependencies) private var dependencies
 
     @State private var viewModel: HistoryViewModel?
 
@@ -17,14 +16,14 @@ struct HistoryScreen: View {
             }
         }
         .onAppear {
+            guard let dependencies else { return }
             if viewModel == nil {
-                let vm = HistoryViewModel()
-                vm.updateSessions(sessions)
+                let vm = HistoryViewModel(loadWorkoutSessionsUseCase: dependencies.makeLoadWorkoutSessionsUseCase())
+                vm.loadSessions()
                 viewModel = vm
+            } else {
+                viewModel?.loadSessions()
             }
-        }
-        .onChange(of: sessions) { _, newSessions in
-            viewModel?.updateSessions(newSessions)
         }
     }
 
@@ -102,5 +101,5 @@ struct HistoryScreen: View {
 
 #Preview {
     HistoryScreen()
-        .modelContainer(for: [WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self], inMemory: true)
+        .modelContainer(for: [WorkoutSessionModel.self, WorkoutExerciseModel.self, ExerciseSetModel.self], inMemory: true)
 }

@@ -4,13 +4,21 @@ struct DifficultyBadge: View {
     let difficulty: Difficulty
 
     var body: some View {
-        Text(difficulty.localizedString)
+        Text(difficultyText)
             .font(.system(size: 12, weight: .medium))
             .foregroundColor(badgeColor)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(badgeColor.opacity(0.2))
             .cornerRadius(8)
+    }
+
+    private var difficultyText: String {
+        switch difficulty {
+        case .prelagano: return "Prelagano"
+        case .ok: return "OK"
+        case .pretesko: return "Preteško"
+        }
     }
 
     private var badgeColor: Color {

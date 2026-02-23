@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct AddEditProgramScreen: View {
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dependencies) private var dependencies
     @Environment(\.dismiss) private var dismiss
     let editProgram: Program?
 
@@ -30,15 +30,14 @@ struct AddEditProgramScreen: View {
             }
         }
         .onAppear {
-            if viewModel == nil {
-                let vm = AddEditProgramViewModel(
-                    editProgram: editProgram,
-                    modelContext: modelContext,
-                    onFinish: { dismiss() }
-                )
-                vm.loadProgramData()
-                viewModel = vm
-            }
+            guard let dependencies, viewModel == nil else { return }
+            let vm = AddEditProgramViewModel(
+                editProgram: editProgram,
+                saveProgramUseCase: dependencies.makeSaveProgramUseCase(),
+                onFinish: { dismiss() }
+            )
+            vm.loadProgramData()
+            viewModel = vm
         }
     }
 
@@ -152,5 +151,5 @@ struct ExerciseEdit: Identifiable {
 
 #Preview("New") {
     AddEditProgramScreen(editProgram: nil)
-        .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self], inMemory: true)
+        .modelContainer(for: [ProgramModel.self, TrainingDayModel.self, ExerciseTemplateModel.self], inMemory: true)
 }

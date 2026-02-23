@@ -1,12 +1,11 @@
 import SwiftUI
-import SwiftData
 import os
+import SwiftData
 
 private let logger = Logger(subsystem: "luka.sarcevic.SetCoach", category: "ProgramDetail")
 
 struct ProgramDetailScreen: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dependencies) private var dependencies
     let program: Program
     @State private var showDeleteAlert = false
     @State private var showEditSheet = false
@@ -61,13 +60,14 @@ struct ProgramDetailScreen: View {
         .alert(String(localized: "Delete Program"), isPresented: $showDeleteAlert) {
             Button(String(localized: "Cancel"), role: .cancel) {}
             Button(String(localized: "Delete"), role: .destructive) {
-                modelContext.delete(program)
+                guard let dependencies else { return }
                 do {
-                    try modelContext.save()
+                    let useCase = dependencies.makeDeleteProgramUseCase()
+                    try useCase.execute(programId: program.id)
+                    dependencies.router.pop()
                 } catch {
                     logger.error("Failed to save after delete: \(error.localizedDescription)")
                 }
-                dismiss()
             }
         } message: {
             Text(String(format: String(localized: "Are you sure you want to delete %@?"), program.name))
@@ -79,7 +79,7 @@ struct ProgramDetailScreen: View {
 }
 
 #Preview {
-    let program = Program(name: "Push Pull Legs", programDescription: "Classic 3-day split for strength and hypertrophy", trainingDays: [])
+    var program = Program(name: "Push Pull Legs", programDescription: "Classic 3-day split for strength and hypertrophy", trainingDays: [])
     let pushDay = TrainingDay(name: "Push Day", exercises: [])
     let pullDay = TrainingDay(name: "Pull Day", exercises: [])
     let legDay = TrainingDay(name: "Leg Day", exercises: [])
@@ -87,5 +87,5 @@ struct ProgramDetailScreen: View {
     return NavigationStack {
         ProgramDetailScreen(program: program)
     }
-    .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self], inMemory: true)
+    .modelContainer(for: [ProgramModel.self, TrainingDayModel.self, ExerciseTemplateModel.self], inMemory: true)
 }

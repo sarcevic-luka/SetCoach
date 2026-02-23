@@ -2,40 +2,49 @@ import SwiftUI
 import SwiftData
 
 struct HomeScreen: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var programs: [Program]
+    @Environment(\.dependencies) private var dependencies
 
     @State private var viewModel: HomeViewModel?
-    @State private var navigationPath = NavigationPath()
 
     var body: some View {
         Group {
-            if let viewModel {
-                homeContent(viewModel: viewModel)
+            if let viewModel, let dependencies {
+                HomeScreenContent(router: dependencies.router, viewModel: viewModel)
             } else {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .onAppear {
+            guard let dependencies else { return }
             if viewModel == nil {
-                let vm = HomeViewModel(modelContext: modelContext)
-                vm.seedDataIfNeeded()
-                vm.updatePrograms(programs)
+                let vm = HomeViewModel(loadProgramsUseCase: dependencies.makeLoadProgramsUseCase())
+                vm.loadPrograms()
                 viewModel = vm
+            } else {
+                viewModel?.loadPrograms()
             }
         }
-        .onChange(of: programs) { _, newPrograms in
-            viewModel?.updatePrograms(newPrograms)
-        }
     }
+}
 
-    @ViewBuilder
-    private func homeContent(viewModel: HomeViewModel) -> some View {
-        NavigationStack(path: $navigationPath) {
+private struct HomeScreenContent: View {
+    @Bindable var router: Router
+    let viewModel: HomeViewModel
+
+    var body: some View {
+        NavigationStack(path: $router.path) {
             ZStack {
                 Theme.background.ignoresSafeArea()
                 VStack(spacing: 0) {
+                    if let error = viewModel.loadError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(Theme.destructive)
+                            .padding(8)
+                            .frame(maxWidth: .infinity)
+                            .background(Theme.destructive.opacity(0.15))
+                    }
                     headerSection
                     if viewModel.isEmpty {
                         emptyState
@@ -70,7 +79,7 @@ struct HomeScreen: View {
                 ForEach(viewModel.programs) { program in
                     ProgramCard(program: program)
                         .onTapGesture {
-                            navigationPath.append(AppRoute.programDetail(program))
+                            router.push(.programDetail(program))
                         }
                 }
             }
@@ -112,6 +121,15 @@ struct HomeScreen: View {
 }
 
 #Preview {
-    HomeScreen()
-        .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self, WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self], inMemory: true)
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let schema = Schema([
+        ProgramModel.self, TrainingDayModel.self, ExerciseTemplateModel.self,
+        WorkoutSessionModel.self, WorkoutExerciseModel.self, ExerciseSetModel.self
+    ])
+    let container = try! ModelContainer(for: schema, configurations: [config])
+    let ctx = ModelContext(container)
+    let deps = Dependencies(context: ctx)
+    return HomeScreen()
+        .environment(\.dependencies, deps)
+        .modelContainer(container)
 }

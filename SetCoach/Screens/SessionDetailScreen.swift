@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 
 struct SessionDetailScreen: View {
     let session: WorkoutSession

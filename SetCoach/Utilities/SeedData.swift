@@ -6,13 +6,8 @@ private let logger = Logger(subsystem: "luka.sarcevic.SetCoach", category: "Seed
 
 enum SeedData {
     static func createSeedPrograms(context: ModelContext) {
-        let descriptor = FetchDescriptor<Program>()
+        let descriptor = FetchDescriptor<ProgramModel>()
         guard (try? context.fetchCount(descriptor)) == 0 else { return }
-
-        let pplProgram = Program(
-            name: "Push Pull Legs",
-            programDescription: "Classic 3-day split for strength and hypertrophy"
-        )
 
         let pushExercises: [ExerciseTemplate] = [
             ExerciseTemplate(name: "Bench Press", targetSets: 4, targetRepsMin: 6, targetRepsMax: 8, notes: "Pause at bottom"),
@@ -21,8 +16,7 @@ enum SeedData {
             ExerciseTemplate(name: "Lateral Raises", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
             ExerciseTemplate(name: "Tricep Pushdowns", targetSets: 3, targetRepsMin: 10, targetRepsMax: 12),
         ]
-        pushExercises.forEach { context.insert($0) }
-        let pushDay = TrainingDay(name: "Push Day")
+        var pushDay = TrainingDay(name: "Push Day")
         pushDay.exercises = pushExercises
 
         let pullExercises: [ExerciseTemplate] = [
@@ -32,8 +26,7 @@ enum SeedData {
             ExerciseTemplate(name: "Face Pulls", targetSets: 3, targetRepsMin: 15, targetRepsMax: 20),
             ExerciseTemplate(name: "Bicep Curls", targetSets: 3, targetRepsMin: 10, targetRepsMax: 12),
         ]
-        pullExercises.forEach { context.insert($0) }
-        let pullDay = TrainingDay(name: "Pull Day")
+        var pullDay = TrainingDay(name: "Pull Day")
         pullDay.exercises = pullExercises
 
         let legExercises: [ExerciseTemplate] = [
@@ -43,17 +36,16 @@ enum SeedData {
             ExerciseTemplate(name: "Leg Curl", targetSets: 3, targetRepsMin: 10, targetRepsMax: 12),
             ExerciseTemplate(name: "Calf Raises", targetSets: 4, targetRepsMin: 12, targetRepsMax: 15),
         ]
-        legExercises.forEach { context.insert($0) }
-        let legDay = TrainingDay(name: "Leg Day")
+        var legDay = TrainingDay(name: "Leg Day")
         legDay.exercises = legExercises
 
-        for day in [pushDay, pullDay, legDay] {
-            context.insert(day)
-        }
+        var pplProgram = Program(
+            name: "Push Pull Legs",
+            programDescription: "Classic 3-day split for strength and hypertrophy"
+        )
         pplProgram.trainingDays = [pushDay, pullDay, legDay]
-        context.insert(pplProgram)
+        insertProgram(pplProgram, into: context)
 
-        // Program 2: Full Body 3-Day Split (Trening 1, 2, 3)
         let trening1Exercises: [ExerciseTemplate] = [
             ExerciseTemplate(name: "Čučanj", targetSets: 4, targetRepsMin: 6, targetRepsMax: 8),
             ExerciseTemplate(name: "Nožna ekstenzija", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
@@ -65,8 +57,7 @@ enum SeedData {
             ExerciseTemplate(name: "Pregib EZ šipkom", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
             ExerciseTemplate(name: "Podizanje nogu za trbuh (ležeći)", targetSets: 3, targetRepsMin: 15, targetRepsMax: 25, notes: "MAX"),
         ]
-        trening1Exercises.forEach { context.insert($0) }
-        let trening1 = TrainingDay(name: "Trening 1")
+        var trening1 = TrainingDay(name: "Trening 1")
         trening1.exercises = trening1Exercises
 
         let trening2Exercises: [ExerciseTemplate] = [
@@ -80,8 +71,7 @@ enum SeedData {
             ExerciseTemplate(name: "Hammer pregib", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
             ExerciseTemplate(name: "Podizanje nogu za trbuh (viseći)", targetSets: 3, targetRepsMin: 15, targetRepsMax: 25, notes: "MAX"),
         ]
-        trening2Exercises.forEach { context.insert($0) }
-        let trening2 = TrainingDay(name: "Trening 2")
+        var trening2 = TrainingDay(name: "Trening 2")
         trening2.exercises = trening2Exercises
 
         let trening3Exercises: [ExerciseTemplate] = [
@@ -96,24 +86,31 @@ enum SeedData {
             ExerciseTemplate(name: "Cable crunch za trbuh", targetSets: 3, targetRepsMin: 12, targetRepsMax: 15),
             ExerciseTemplate(name: "Podizanje za listove - Smith mašina", targetSets: 4, targetRepsMin: 12, targetRepsMax: 15),
         ]
-        trening3Exercises.forEach { context.insert($0) }
-        let trening3 = TrainingDay(name: "Trening 3")
+        var trening3 = TrainingDay(name: "Trening 3")
         trening3.exercises = trening3Exercises
 
-        let fullBodyProgram = Program(
+        var fullBodyProgram = Program(
             name: "Full Body 3-Day",
             programDescription: "Trening 1, 2, 3 – puni tijelo u tri dana"
         )
-        for day in [trening1, trening2, trening3] {
-            context.insert(day)
-        }
         fullBodyProgram.trainingDays = [trening1, trening2, trening3]
-        context.insert(fullBodyProgram)
+        insertProgram(fullBodyProgram, into: context)
 
         do {
             try context.save()
         } catch {
             logger.error("Failed to save seed data: \(error.localizedDescription)")
         }
+    }
+
+    static func insertProgram(_ program: Program, into context: ModelContext) {
+        let programModel = ProgramModel(from: program)
+        for day in programModel.trainingDays {
+            for ex in day.exercises {
+                context.insert(ex)
+            }
+            context.insert(day)
+        }
+        context.insert(programModel)
     }
 }

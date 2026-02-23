@@ -1,45 +1,37 @@
-import SwiftUI
-import SwiftData
 import Foundation
-import Combine
+import os
 
 @MainActor
-final class TrainingDetailViewModel: ObservableObject {
+@Observable
+final class TrainingDetailViewModel {
     let program: Program
     let trainingDay: TrainingDay
-    
-    @Published var sessions: [WorkoutSession] = []
-    
+    private(set) var sessions: [WorkoutSession] = []
+
     var lastSession: WorkoutSession? {
         sessions
             .filter { $0.trainingDayId == trainingDay.id && $0.completed }
             .sorted { $0.date > $1.date }
             .first
     }
-    
-    private var modelContext: ModelContext?
-    
-    init(program: Program, trainingDay: TrainingDay) {
+
+    private let loadWorkoutSessionsUseCase: LoadWorkoutSessionsUseCase
+
+    init(program: Program, trainingDay: TrainingDay, loadWorkoutSessionsUseCase: LoadWorkoutSessionsUseCase) {
         self.program = program
         self.trainingDay = trainingDay
+        self.loadWorkoutSessionsUseCase = loadWorkoutSessionsUseCase
     }
-    
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-        refresh()
-    }
-    
-    func refresh() {
-        guard let ctx = modelContext else { return }
+
+    func loadSessions() {
         do {
-            let fetchDescriptor = FetchDescriptor<WorkoutSession>(sortBy: [SortDescriptor(\.date, order: .reverse)])
-            let fetchedSessions = try ctx.fetch(fetchDescriptor)
-            sessions = fetchedSessions
+            sessions = try loadWorkoutSessionsUseCase.execute(sortByDateDescending: true)
         } catch {
-            print("Failed to fetch WorkoutSessions: \(error)")
+            logger.error("Failed to fetch sessions: \(error.localizedDescription)")
+            sessions = []
         }
     }
-    
+
     func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -48,3 +40,5 @@ final class TrainingDetailViewModel: ObservableObject {
         return formatter.string(from: date)
     }
 }
+
+private let logger = Logger(subsystem: "luka.sarcevic.SetCoach", category: "TrainingDetail")

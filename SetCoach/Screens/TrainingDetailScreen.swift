@@ -2,14 +2,36 @@ import SwiftUI
 import SwiftData
 
 struct TrainingDetailScreen: View {
-    @Environment(\.modelContext) private var modelContext
-    @StateObject private var viewModel: TrainingDetailViewModel
-
-    init(program: Program, trainingDay: TrainingDay) {
-        _viewModel = StateObject(wrappedValue: TrainingDetailViewModel(program: program, trainingDay: trainingDay))
-    }
+    @Environment(\.dependencies) private var dependencies
+    let program: Program
+    let trainingDay: TrainingDay
+    @State private var viewModel: TrainingDetailViewModel?
 
     var body: some View {
+        Group {
+            if let viewModel {
+                trainingContent(viewModel: viewModel)
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .navigationTitle(trainingDay.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            guard let dependencies, viewModel == nil else { return }
+            let vm = TrainingDetailViewModel(
+                program: program,
+                trainingDay: trainingDay,
+                loadWorkoutSessionsUseCase: dependencies.makeLoadWorkoutSessionsUseCase()
+            )
+            vm.loadSessions()
+            viewModel = vm
+        }
+    }
+
+    @ViewBuilder
+    private func trainingContent(viewModel: TrainingDetailViewModel) -> some View {
         ZStack {
             Theme.background.ignoresSafeArea()
             VStack(spacing: 0) {
@@ -56,11 +78,6 @@ struct TrainingDetailScreen: View {
                 .background(Theme.background.opacity(0.95))
             }
         }
-        .navigationTitle(viewModel.trainingDay.name)
-        .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            viewModel.configure(with: modelContext)
-        }
     }
 }
 
@@ -69,9 +86,17 @@ struct TrainingDetailScreen: View {
     let day = TrainingDay(name: "Push Day", exercises: [
         ExerciseTemplate(name: "Bench Press", targetSets: 4, targetRepsMin: 6, targetRepsMax: 8, notes: "Pause at bottom")
     ])
-    let container = try! ModelContainer(for: Program.self, TrainingDay.self, ExerciseTemplate.self, WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self)
-    NavigationStack {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let schema = Schema([
+        ProgramModel.self, TrainingDayModel.self, ExerciseTemplateModel.self,
+        WorkoutSessionModel.self, WorkoutExerciseModel.self, ExerciseSetModel.self
+    ])
+    let container = try! ModelContainer(for: schema, configurations: [config])
+    let ctx = ModelContext(container)
+    let deps = Dependencies(context: ctx)
+    return NavigationStack {
         TrainingDetailScreen(program: program, trainingDay: day)
+            .environment(\.dependencies, deps)
     }
     .modelContainer(container)
 }

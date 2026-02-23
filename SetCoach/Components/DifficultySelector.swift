@@ -10,25 +10,39 @@ struct DifficultySelector: View {
                 .foregroundColor(Theme.muted)
             HStack(spacing: 8) {
                 ForEach([Difficulty.prelagano, .ok, .pretesko], id: \.self) { diff in
-                    Button(action: { difficulty = diff }) {
-                        Text(diff.localizedString)
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(difficulty == diff ? buttonColor(diff) : Theme.muted)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: Theme.minTouchTarget)
-                            .background(difficulty == diff ? buttonColor(diff).opacity(0.2) : Theme.secondary)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(difficulty == diff ? buttonColor(diff) : Color.clear, lineWidth: 2)
-                            )
-                            .cornerRadius(8)
-                    }
+                    DifficultyButton(
+                        diff: diff,
+                        isSelected: difficulty == diff,
+                        action: { difficulty = diff }
+                    )
                 }
             }
         }
     }
+}
 
-    private func buttonColor(_ diff: Difficulty) -> Color {
+private struct DifficultyButton: View {
+    let diff: Difficulty
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(diff.localizedString)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(isSelected ? color(for: diff) : Theme.muted)
+                .frame(maxWidth: .infinity)
+                .frame(height: Theme.minTouchTarget)
+                .background(isSelected ? color(for: diff).opacity(0.2) : Theme.secondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(isSelected ? color(for: diff) : Color.clear, lineWidth: 2)
+                )
+                .cornerRadius(8)
+        }
+    }
+
+    private func color(for diff: Difficulty) -> Color {
         switch diff {
         case .prelagano: return Theme.primary
         case .ok: return Theme.blue

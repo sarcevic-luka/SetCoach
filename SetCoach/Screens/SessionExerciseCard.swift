@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct SessionExerciseCard: View {
-    @StateObject private var viewModel: SessionExerciseCardViewModel
+    @State private var viewModel: SessionExerciseCardViewModel
 
     init(exercise: WorkoutExercise) {
-        _viewModel = StateObject(wrappedValue: SessionExerciseCardViewModel(exercise: exercise))
+        _viewModel = State(initialValue: SessionExerciseCardViewModel(exercise: exercise))
     }
 
     var body: some View {

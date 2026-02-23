@@ -8,12 +8,12 @@ struct SetCoachApp: App {
             ContentView()
         }
         .modelContainer(for: [
-            Program.self,
-            TrainingDay.self,
-            ExerciseTemplate.self,
-            WorkoutSession.self,
-            WorkoutExercise.self,
-            ExerciseSet.self
+            ProgramModel.self,
+            TrainingDayModel.self,
+            ExerciseTemplateModel.self,
+            WorkoutSessionModel.self,
+            WorkoutExerciseModel.self,
+            ExerciseSetModel.self
         ])
     }
 }

@@ -1,5 +1,4 @@
 import Foundation
-import SwiftData
 import SwiftUI
 import os
 
@@ -18,7 +17,7 @@ final class ActiveWorkoutViewModel {
     private let program: Program
     private let trainingDay: TrainingDay
     private let lastSession: WorkoutSession?
-    private let modelContext: ModelContext
+    private let saveWorkoutSessionUseCase: SaveWorkoutSessionUseCase
     private let idleTimerService: IdleTimerManaging
     private let onFinish: () -> Void
 
@@ -45,14 +44,14 @@ final class ActiveWorkoutViewModel {
         program: Program,
         trainingDay: TrainingDay,
         lastSession: WorkoutSession?,
-        modelContext: ModelContext,
+        saveWorkoutSessionUseCase: SaveWorkoutSessionUseCase,
         idleTimerService: IdleTimerManaging? = nil,
         onFinish: @escaping () -> Void
     ) {
         self.program = program
         self.trainingDay = trainingDay
         self.lastSession = lastSession
-        self.modelContext = modelContext
+        self.saveWorkoutSessionUseCase = saveWorkoutSessionUseCase
         self.idleTimerService = idleTimerService ?? LiveIdleTimerService()
         self.onFinish = onFinish
     }
@@ -90,9 +89,8 @@ final class ActiveWorkoutViewModel {
             waistCircumference: waistCircumference,
             completed: true
         )
-        modelContext.insert(session)
         do {
-            try modelContext.save()
+            try saveWorkoutSessionUseCase.execute(session)
         } catch {
             logger.error("Failed to save workout session: \(error.localizedDescription)")
         }

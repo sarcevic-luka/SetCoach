@@ -7,10 +7,29 @@ enum Tab {
 }
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
+    @State private var dependencies: Dependencies?
     @State private var selectedTab: Tab = .programs
     @State private var showAddProgram = false
 
     var body: some View {
+        Group {
+            if let dependencies {
+                mainContent(dependencies: dependencies)
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .environment(\.dependencies, dependencies)
+        .onAppear {
+            if dependencies == nil {
+                dependencies = Dependencies(context: modelContext)
+            }
+        }
+    }
+
+    private func mainContent(dependencies: Dependencies) -> some View {
         ZStack(alignment: .bottom) {
             Group {
                 switch selectedTab {
@@ -62,6 +81,7 @@ struct ContentView: View {
     }
 }
 
+
 private struct TabButton: View {
     let icon: String
     let title: String
@@ -84,5 +104,5 @@ private struct TabButton: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self, WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self], inMemory: true)
+        .modelContainer(for: [ProgramModel.self, TrainingDayModel.self, ExerciseTemplateModel.self, WorkoutSessionModel.self, WorkoutExerciseModel.self, ExerciseSetModel.self], inMemory: true)
 }

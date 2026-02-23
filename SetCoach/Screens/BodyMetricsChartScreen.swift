@@ -3,7 +3,7 @@ import SwiftData
 import Charts
 
 struct BodyMetricsChartScreen: View {
-    @Query(sort: \WorkoutSession.date) private var sessions: [WorkoutSession]
+    @Environment(\.dependencies) private var dependencies
     @State private var viewModel: BodyMetricsChartViewModel?
 
     var body: some View {
@@ -18,14 +18,12 @@ struct BodyMetricsChartScreen: View {
         .navigationTitle(String(localized: "Body Metrics"))
         .navigationBarTitleDisplayMode(.large)
         .onAppear {
+            guard let dependencies else { return }
             if viewModel == nil {
-                let vm = BodyMetricsChartViewModel()
-                vm.updateSessions(sessions)
-                viewModel = vm
+                viewModel = BodyMetricsChartViewModel()
             }
-        }
-        .onChange(of: sessions) { _, newSessions in
-            viewModel?.updateSessions(newSessions)
+            let sessions = (try? dependencies.makeLoadWorkoutSessionsUseCase().execute(sortByDateDescending: false)) ?? []
+            viewModel?.updateSessions(sessions)
         }
     }
 
@@ -204,8 +202,14 @@ struct BodyMetricsChartScreen: View {
 }
 
 #Preview {
-    NavigationStack {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let schema = Schema([WorkoutSessionModel.self])
+    let container = try! ModelContainer(for: schema, configurations: [config])
+    let ctx = ModelContext(container)
+    let deps = Dependencies(context: ctx)
+    return NavigationStack {
         BodyMetricsChartScreen()
-            .modelContainer(for: [WorkoutSession.self], inMemory: true)
+            .environment(\.dependencies, deps)
     }
+    .modelContainer(container)
 }

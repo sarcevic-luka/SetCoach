@@ -1,26 +1,31 @@
 import Foundation
-import SwiftData
 
-@Model
-final class WorkoutSession {
-    @Attribute(.unique) var id: String
+struct WorkoutSession: Identifiable, Equatable, Hashable {
+    let id: String
     var programId: String
     var programName: String
     var trainingDayId: String
     var trainingDayName: String
     var date: Date
-    var duration: Int  // minutes
-    @Relationship(deleteRule: .cascade) var exercises: [WorkoutExercise]
+    var duration: Int
+    var exercises: [WorkoutExercise]
     var bodyWeight: Double?
     var waistCircumference: Double?
     var completed: Bool
-    
-    init(id: String = UUID().uuidString, programId: String,
-         programName: String, trainingDayId: String,
-         trainingDayName: String, date: Date = Date(),
-         duration: Int = 0, exercises: [WorkoutExercise] = [],
-         bodyWeight: Double? = nil, waistCircumference: Double? = nil,
-         completed: Bool = false) {
+
+    init(
+        id: String = UUID().uuidString,
+        programId: String,
+        programName: String,
+        trainingDayId: String,
+        trainingDayName: String,
+        date: Date = Date(),
+        duration: Int = 0,
+        exercises: [WorkoutExercise] = [],
+        bodyWeight: Double? = nil,
+        waistCircumference: Double? = nil,
+        completed: Bool = false
+    ) {
         self.id = id
         self.programId = programId
         self.programName = programName

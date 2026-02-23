@@ -2,9 +2,8 @@ import SwiftUI
 import SwiftData
 
 struct ActiveWorkoutScreen: View {
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dependencies) private var dependencies
     @Environment(\.dismiss) private var dismiss
-    @Query private var sessions: [WorkoutSession]
     let program: Program
     let trainingDay: TrainingDay
 
@@ -52,21 +51,21 @@ struct ActiveWorkoutScreen: View {
             }
         }
         .onAppear {
-            if viewModel == nil {
-                let lastSession = sessions
-                    .filter { $0.trainingDayId == trainingDay.id && $0.completed }
-                    .sorted { $0.date > $1.date }
-                    .first
-                let vm = ActiveWorkoutViewModel(
-                    program: program,
-                    trainingDay: trainingDay,
-                    lastSession: lastSession,
-                    modelContext: modelContext,
-                    onFinish: { dismiss() }
-                )
-                vm.start()
-                viewModel = vm
-            }
+            guard let dependencies, viewModel == nil else { return }
+            let sessions = (try? dependencies.makeLoadWorkoutSessionsUseCase().execute(sortByDateDescending: true)) ?? []
+            let lastSession = sessions
+                .filter { $0.trainingDayId == trainingDay.id && $0.completed }
+                .sorted { $0.date > $1.date }
+                .first
+            let vm = ActiveWorkoutViewModel(
+                program: program,
+                trainingDay: trainingDay,
+                lastSession: lastSession,
+                saveWorkoutSessionUseCase: dependencies.makeSaveWorkoutSessionUseCase(),
+                onFinish: { dismiss() }
+            )
+            vm.start()
+            viewModel = vm
         }
         .onDisappear {
             viewModel?.stop()
@@ -222,15 +221,23 @@ struct ActiveWorkoutScreen: View {
 }
 
 #Preview {
-    let program = Program(name: "Preview", programDescription: nil, trainingDays: [])
+    var program = Program(name: "Preview", programDescription: nil, trainingDays: [])
     let day = TrainingDay(name: "Push Day", exercises: [
         ExerciseTemplate(name: "Bench Press", targetSets: 3, targetRepsMin: 8, targetRepsMax: 12),
         ExerciseTemplate(name: "Squat", targetSets: 3, targetRepsMin: 8, targetRepsMax: 10),
     ])
     program.trainingDays = [day]
-
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let schema = Schema([
+        ProgramModel.self, TrainingDayModel.self, ExerciseTemplateModel.self,
+        WorkoutSessionModel.self, WorkoutExerciseModel.self, ExerciseSetModel.self
+    ])
+    let container = try! ModelContainer(for: schema, configurations: [config])
+    let ctx = ModelContext(container)
+    let deps = Dependencies(context: ctx)
     return NavigationStack {
         ActiveWorkoutScreen(program: program, trainingDay: day)
+            .environment(\.dependencies, deps)
     }
-    .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self, WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self], inMemory: true)
+    .modelContainer(container)
 }

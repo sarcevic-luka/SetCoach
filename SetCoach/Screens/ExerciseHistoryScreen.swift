@@ -3,7 +3,7 @@ import SwiftData
 import Charts
 
 struct ExerciseHistoryScreen: View {
-    @Query private var allSessions: [WorkoutSession]
+    @Environment(\.dependencies) private var dependencies
     let exerciseName: String
 
     @State private var viewModel: ExerciseHistoryViewModel?
@@ -21,14 +21,12 @@ struct ExerciseHistoryScreen: View {
         .navigationTitle(exerciseName)
         .navigationBarTitleDisplayMode(.large)
         .onAppear {
+            guard let dependencies else { return }
             if viewModel == nil {
-                let vm = ExerciseHistoryViewModel(exerciseName: exerciseName)
-                vm.updateSessions(allSessions)
-                viewModel = vm
+                viewModel = ExerciseHistoryViewModel(exerciseName: exerciseName)
             }
-        }
-        .onChange(of: allSessions) { _, newSessions in
-            viewModel?.updateSessions(newSessions)
+            let sessions = (try? dependencies.makeLoadWorkoutSessionsUseCase().execute()) ?? []
+            viewModel?.updateSessions(sessions)
         }
     }
 
@@ -249,8 +247,14 @@ struct ExerciseHistoryScreen: View {
 }
 
 #Preview {
-    NavigationStack {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let schema = Schema([WorkoutSessionModel.self, WorkoutExerciseModel.self, ExerciseSetModel.self])
+    let container = try! ModelContainer(for: schema, configurations: [config])
+    let ctx = ModelContext(container)
+    let deps = Dependencies(context: ctx)
+    return NavigationStack {
         ExerciseHistoryScreen(exerciseName: "Bench Press")
-            .modelContainer(for: [WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self], inMemory: true)
+            .environment(\.dependencies, deps)
     }
+    .modelContainer(container)
 }

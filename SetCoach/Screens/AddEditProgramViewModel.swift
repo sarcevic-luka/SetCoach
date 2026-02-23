@@ -1,5 +1,4 @@
 import Foundation
-import SwiftData
 import SwiftUI
 import os
 
@@ -11,7 +10,7 @@ final class AddEditProgramViewModel {
     var trainingDays: [TrainingDayEdit] = []
 
     private let editProgram: Program?
-    private let modelContext: ModelContext
+    private let saveProgramUseCase: SaveProgramUseCase
     private let onFinish: () -> Void
 
     var isValid: Bool {
@@ -30,11 +29,11 @@ final class AddEditProgramViewModel {
 
     init(
         editProgram: Program?,
-        modelContext: ModelContext,
+        saveProgramUseCase: SaveProgramUseCase,
         onFinish: @escaping () -> Void
     ) {
         self.editProgram = editProgram
-        self.modelContext = modelContext
+        self.saveProgramUseCase = saveProgramUseCase
         self.onFinish = onFinish
     }
 
@@ -83,72 +82,43 @@ final class AddEditProgramViewModel {
     }
 
     func saveProgram() {
-        if let existing = editProgram {
-            updateExistingProgram(existing)
-        } else {
-            createNewProgram()
-        }
         do {
-            try modelContext.save()
+            let program = buildProgramFromForm()
+            try saveProgramUseCase.execute(program)
             onFinish()
         } catch {
             logger.error("Failed to save program: \(error.localizedDescription)")
         }
     }
 
-    private func updateExistingProgram(_ existing: Program) {
-        let oldDays = Array(existing.trainingDays)
-        for day in oldDays {
-            for ex in day.exercises {
-                modelContext.delete(ex)
-            }
-            modelContext.delete(day)
-        }
-        existing.trainingDays.removeAll()
-        existing.name = programName
-        existing.programDescription = programDescription.isEmpty ? nil : programDescription
-        for dayEdit in trainingDays {
-            let day = TrainingDay(id: dayEdit.id, name: dayEdit.name)
-            for exEdit in dayEdit.exercises {
-                let exercise = ExerciseTemplate(
-                    id: exEdit.id,
-                    name: exEdit.name,
-                    targetSets: exEdit.targetSets,
-                    targetRepsMin: exEdit.targetRepsMin,
-                    targetRepsMax: exEdit.targetRepsMax,
-                    notes: exEdit.notes.isEmpty ? nil : exEdit.notes
-                )
-                day.exercises.append(exercise)
-                modelContext.insert(exercise)
-            }
-            existing.trainingDays.append(day)
-            modelContext.insert(day)
-        }
-    }
-
-    private func createNewProgram() {
-        let program = Program(
+    private func buildProgramFromForm() -> Program {
+        let id = editProgram?.id ?? UUID().uuidString
+        let createdAt = editProgram?.createdAt ?? Date()
+        var program = Program(
+            id: id,
             name: programName,
-            programDescription: programDescription.isEmpty ? nil : programDescription
+            programDescription: programDescription.isEmpty ? nil : programDescription,
+            trainingDays: [],
+            createdAt: createdAt
         )
         for dayEdit in trainingDays {
-            let day = TrainingDay(id: dayEdit.id, name: dayEdit.name)
-            for exEdit in dayEdit.exercises {
-                let exercise = ExerciseTemplate(
-                    id: exEdit.id,
-                    name: exEdit.name,
-                    targetSets: exEdit.targetSets,
-                    targetRepsMin: exEdit.targetRepsMin,
-                    targetRepsMax: exEdit.targetRepsMax,
-                    notes: exEdit.notes.isEmpty ? nil : exEdit.notes
-                )
-                day.exercises.append(exercise)
-                modelContext.insert(exercise)
-            }
-            program.trainingDays.append(day)
-            modelContext.insert(day)
+            let domainDay = TrainingDay(
+                id: dayEdit.id,
+                name: dayEdit.name,
+                exercises: dayEdit.exercises.map { exEdit in
+                    ExerciseTemplate(
+                        id: exEdit.id,
+                        name: exEdit.name,
+                        targetSets: exEdit.targetSets,
+                        targetRepsMin: exEdit.targetRepsMin,
+                        targetRepsMax: exEdit.targetRepsMax,
+                        notes: exEdit.notes.isEmpty ? nil : exEdit.notes
+                    )
+                }
+            )
+            program.trainingDays.append(domainDay)
         }
-        modelContext.insert(program)
+        return program
     }
 }
 
