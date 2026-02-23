@@ -7,6 +7,7 @@ private let logger = Logger(subsystem: "luka.sarcevic.SetCoach", category: "Prog
 struct ProgramDetailScreen: View {
     @Environment(\.dependencies) private var dependencies
     let program: Program
+    var onProgramUpdated: (() -> Void)?
     @State private var showDeleteAlert = false
     @State private var showEditSheet = false
 
@@ -72,7 +73,9 @@ struct ProgramDetailScreen: View {
         } message: {
             Text(String(format: String(localized: "Are you sure you want to delete %@?"), program.name))
         }
-        .sheet(isPresented: $showEditSheet) {
+        .sheet(isPresented: $showEditSheet, onDismiss: {
+            onProgramUpdated?()
+        }) {
             AddEditProgramScreen(editProgram: program)
         }
     }

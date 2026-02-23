@@ -48,6 +48,7 @@ struct AddEditProgramScreen: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         programFieldsSection(viewModel: viewModel)
+                        programImageSection(viewModel: viewModel)
                         trainingDaysSection(viewModel: viewModel)
                     }
                     .padding(.horizontal, 12)
@@ -97,6 +98,26 @@ struct AddEditProgramScreen: View {
                     .background(Theme.secondary)
                     .cornerRadius(8)
                 }
+            }
+        }
+    }
+
+    private func programImageSection(viewModel: AddEditProgramViewModel) -> some View {
+        CardView {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Program Image")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Theme.muted)
+                ProgramImagePicker(
+                    imageIdentifier: Binding(
+                        get: { viewModel.imageIdentifier },
+                        set: { viewModel.imageIdentifier = $0 }
+                    ),
+                    customImageData: Binding(
+                        get: { viewModel.customImageData },
+                        set: { viewModel.customImageData = $0 }
+                    )
+                )
             }
         }
     }

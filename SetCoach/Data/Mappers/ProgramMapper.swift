@@ -8,6 +8,8 @@ struct ProgramMapper {
             id: entity.id,
             name: entity.name,
             programDescription: entity.programDescription,
+            imageIdentifier: entity.imageIdentifier,
+            customImageData: entity.customImageData,
             trainingDays: entity.trainingDays.map { TrainingDayMapper.toModel(from: $0) },
             createdAt: entity.createdAt
         )
@@ -18,6 +20,8 @@ struct ProgramMapper {
             id: model.id,
             name: model.name,
             programDescription: model.programDescription,
+            imageIdentifier: model.imageIdentifier,
+            customImageData: model.customImageData,
             trainingDays: model.trainingDays.map { TrainingDayMapper.toDomain(from: $0) },
             createdAt: model.createdAt
         )

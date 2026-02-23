@@ -3,13 +3,14 @@ import SwiftData
 
 struct HomeScreen: View {
     @Environment(\.dependencies) private var dependencies
+    var refreshTrigger: Int = 0
 
     @State private var viewModel: HomeViewModel?
 
     var body: some View {
         Group {
             if let viewModel, let dependencies {
-                HomeScreenContent(router: dependencies.router, viewModel: viewModel)
+                HomeScreenContent(router: dependencies.router, viewModel: viewModel, refreshTrigger: refreshTrigger)
             } else {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -25,12 +26,16 @@ struct HomeScreen: View {
                 viewModel?.loadPrograms()
             }
         }
+        .onChange(of: refreshTrigger) { _, _ in
+            viewModel?.loadPrograms()
+        }
     }
 }
 
 private struct HomeScreenContent: View {
     @Bindable var router: Router
     let viewModel: HomeViewModel
+    let refreshTrigger: Int
 
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -54,7 +59,7 @@ private struct HomeScreenContent: View {
                 }
             }
             .navigationDestination(for: AppRoute.self) { route in
-                routeDestination(for: route)
+                routeDestination(for: route, viewModel: viewModel)
             }
         }
     }
@@ -104,10 +109,10 @@ private struct HomeScreenContent: View {
     }
 
     @ViewBuilder
-    private func routeDestination(for route: AppRoute) -> some View {
+    private func routeDestination(for route: AppRoute, viewModel: HomeViewModel) -> some View {
         switch route {
         case .programDetail(let program):
-            ProgramDetailScreen(program: program)
+            ProgramDetailScreen(program: program, onProgramUpdated: { viewModel.loadPrograms() })
         case .trainingDetail(let program, let trainingDay):
             TrainingDetailScreen(program: program, trainingDay: trainingDay)
         case .exerciseHistory(let exerciseName):

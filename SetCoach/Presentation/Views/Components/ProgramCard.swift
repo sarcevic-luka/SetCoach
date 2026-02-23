@@ -6,14 +6,7 @@ struct ProgramCard: View {
     var body: some View {
         CardView {
             HStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .fill(Theme.primary.opacity(0.2))
-                        .frame(width: 56, height: 56)
-                    Image(systemName: "dumbbell.fill")
-                        .font(.system(size: 24))
-                        .foregroundColor(Theme.primary)
-                }
+                ProgramImageView(program: program, size: 56, cornerRadius: 12)
                 VStack(alignment: .leading, spacing: 6) {
                     Text(program.name)
                         .font(.system(size: 18, weight: .bold))

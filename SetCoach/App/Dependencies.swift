@@ -25,6 +25,8 @@ final class Dependencies {
         self.workoutSessionRepository = WorkoutSessionRepository(context: context)
     }
 
+    // MARK: - Program Use Cases
+    
     func makeLoadProgramsUseCase() -> LoadProgramsUseCase {
         LoadProgramsUseCase(programRepository: programRepository)
     }
@@ -37,6 +39,8 @@ final class Dependencies {
         DeleteProgramUseCase(programRepository: programRepository)
     }
 
+    // MARK: - Workout Session Use Cases
+    
     func makeLoadWorkoutSessionsUseCase() -> LoadWorkoutSessionsUseCase {
         LoadWorkoutSessionsUseCase(workoutSessionRepository: workoutSessionRepository)
     }
@@ -48,7 +52,15 @@ final class Dependencies {
     func makeGetLastWorkoutSessionUseCase() -> GetLastWorkoutSessionUseCase {
         GetLastWorkoutSessionUseCase(loadWorkoutSessionsUseCase: makeLoadWorkoutSessionsUseCase())
     }
+    
+    func makeCreateManualWorkoutSessionUseCase() -> CreateManualWorkoutSessionUseCase {
+        CreateManualWorkoutSessionUseCase(
+            initializeExercisesUseCase: makeInitializeWorkoutExercisesUseCase()
+        )
+    }
 
+    // MARK: - Business Logic Use Cases
+    
     func makeCalculateTrainingVolumeUseCase() -> CalculateTrainingVolumeUseCase {
         CalculateTrainingVolumeUseCase()
     }

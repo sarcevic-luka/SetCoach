@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var dependencies: Dependencies?
     @State private var selectedTab: Tab = .programs
     @State private var showAddProgram = false
+    @State private var programsListRefreshTrigger = 0
 
     var body: some View {
         Group {
@@ -34,7 +35,7 @@ struct ContentView: View {
             Group {
                 switch selectedTab {
                 case .programs:
-                    HomeScreen()
+                    HomeScreen(refreshTrigger: programsListRefreshTrigger)
                 case .history:
                     HistoryScreen()
                 }
@@ -75,7 +76,9 @@ struct ContentView: View {
                 Theme.card.shadow(color: .black.opacity(0.1), radius: 10, y: -2)
             )
         }
-        .sheet(isPresented: $showAddProgram) {
+        .sheet(isPresented: $showAddProgram, onDismiss: {
+            programsListRefreshTrigger += 1
+        }) {
             AddEditProgramScreen(editProgram: nil)
         }
     }
