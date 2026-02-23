@@ -51,7 +51,7 @@ struct AddEditProgramScreen: View {
                         programFieldsSection(viewModel: viewModel)
                         trainingDaysSection(viewModel: viewModel)
                     }
-                    .padding()
+                    .padding(.horizontal, 12)
                     .padding(.bottom, 80)
                 }
                 VStack {
@@ -113,6 +113,7 @@ struct AddEditProgramScreen: View {
                     trainingDay: viewModel.binding(forTrainingDayAt: index),
                     onDelete: { viewModel.removeTrainingDay(id: dayId) }
                 )
+                .frame(maxWidth: .infinity)
             }
             Button(action: { viewModel.addTrainingDay() }) {
                 HStack {

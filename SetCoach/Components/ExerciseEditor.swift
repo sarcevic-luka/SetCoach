@@ -61,100 +61,14 @@ struct ExerciseEditor: View {
                 }
             }
 
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Sets")
-                        .font(.system(size: 11))
-                        .foregroundColor(Theme.muted)
-                    HStack {
-                        Button(action: {
-                            if exercise.targetSets > 1 {
-                                exercise.targetSets -= 1
-                            }
-                        }) {
-                            Image(systemName: "minus")
-                                .font(.system(size: 12))
-                                .foregroundColor(Theme.foreground)
-                                .frame(width: 32, height: 32)
-                                .background(Theme.secondary)
-                                .cornerRadius(6)
-                        }
-                        Text("\(exercise.targetSets)")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(Theme.foreground)
-                            .frame(width: 40)
-                        Button(action: { exercise.targetSets += 1 }) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 12))
-                                .foregroundColor(Theme.foreground)
-                                .frame(width: 32, height: 32)
-                                .background(Theme.secondary)
-                                .cornerRadius(6)
-                        }
-                    }
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Min Reps")
-                        .font(.system(size: 11))
-                        .foregroundColor(Theme.muted)
-                    HStack {
-                        Button(action: {
-                            if exercise.targetRepsMin > 1 {
-                                exercise.targetRepsMin -= 1
-                            }
-                        }) {
-                            Image(systemName: "minus")
-                                .font(.system(size: 12))
-                                .foregroundColor(Theme.foreground)
-                                .frame(width: 32, height: 32)
-                                .background(Theme.secondary)
-                                .cornerRadius(6)
-                        }
-                        Text("\(exercise.targetRepsMin)")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(Theme.foreground)
-                            .frame(width: 40)
-                        Button(action: { exercise.targetRepsMin += 1 }) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 12))
-                                .foregroundColor(Theme.foreground)
-                                .frame(width: 32, height: 32)
-                                .background(Theme.secondary)
-                                .cornerRadius(6)
-                        }
-                    }
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Max Reps")
-                        .font(.system(size: 11))
-                        .foregroundColor(Theme.muted)
-                    HStack {
-                        Button(action: {
-                            if exercise.targetRepsMax > exercise.targetRepsMin {
-                                exercise.targetRepsMax -= 1
-                            }
-                        }) {
-                            Image(systemName: "minus")
-                                .font(.system(size: 12))
-                                .foregroundColor(Theme.foreground)
-                                .frame(width: 32, height: 32)
-                                .background(Theme.secondary)
-                                .cornerRadius(6)
-                        }
-                        Text("\(exercise.targetRepsMax)")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(Theme.foreground)
-                            .frame(width: 40)
-                        Button(action: { exercise.targetRepsMax += 1 }) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 12))
-                                .foregroundColor(Theme.foreground)
-                                .frame(width: 32, height: 32)
-                                .background(Theme.secondary)
-                                .cornerRadius(6)
-                        }
-                    }
-                }
+            // 👇 FIXED: flexible columns instead of fixed widths
+            HStack(spacing: 8) {
+                stepperView(label: "Sets", value: $exercise.targetSets, min: 1)
+                    .frame(maxWidth: .infinity)
+                stepperView(label: "Min Reps", value: $exercise.targetRepsMin, min: 1)
+                    .frame(maxWidth: .infinity)
+                stepperView(label: "Max Reps", value: $exercise.targetRepsMax, min: exercise.targetRepsMin + 1)
+                    .frame(maxWidth: .infinity)
             }
 
             TextField("Notes (optional)", text: $exercise.notes)
@@ -167,5 +81,40 @@ struct ExerciseEditor: View {
         .padding(12)
         .background(Theme.secondary.opacity(0.5))
         .cornerRadius(8)
+    }
+
+    // 👇 NEW: extracted stepper helper
+    private func stepperView(label: String, value: Binding<Int>, min: Int) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.system(size: 11))
+                .foregroundColor(Theme.muted)
+            HStack(spacing: 4) {
+                Button(action: {
+                    if value.wrappedValue > min {
+                        value.wrappedValue -= 1
+                    }
+                }) {
+                    Image(systemName: "minus")
+                        .font(.system(size: 12))
+                        .foregroundColor(Theme.foreground)
+                        .frame(width: 28, height: 28)
+                        .background(Theme.secondary)
+                        .cornerRadius(6)
+                }
+                Text("\(value.wrappedValue)")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(Theme.foreground)
+                    .frame(maxWidth: .infinity)  // flexible instead of fixed 40
+                Button(action: { value.wrappedValue += 1 }) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 12))
+                        .foregroundColor(Theme.foreground)
+                        .frame(width: 28, height: 28)
+                        .background(Theme.secondary)
+                        .cornerRadius(6)
+                }
+            }
+        }
     }
 }
