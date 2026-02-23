@@ -89,7 +89,6 @@ private struct HomeScreenContent: View {
                 }
             }
             .padding()
-            .padding(.bottom, 96)
         }
     }
 

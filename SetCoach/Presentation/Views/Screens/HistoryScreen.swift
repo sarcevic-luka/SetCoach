@@ -118,7 +118,6 @@ struct HistoryScreen: View {
                 }
             }
             .padding()
-            .padding(.bottom, 96)
         }
     }
 

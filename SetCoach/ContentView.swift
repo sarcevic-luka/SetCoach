@@ -31,7 +31,7 @@ struct ContentView: View {
     }
 
     private func mainContent(dependencies: Dependencies) -> some View {
-        ZStack(alignment: .bottom) {
+        VStack(spacing: 0) {
             Group {
                 switch selectedTab {
                 case .programs:
@@ -42,45 +42,48 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            HStack(spacing: 0) {
-                TabButton(
-                    icon: "dumbbell.fill",
-                    title: "Programs",
-                    isSelected: selectedTab == .programs
-                ) {
-                    selectedTab = .programs
-                }
-                Spacer()
-                Button(action: { showAddProgram = true }) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 24, weight: .semibold))
-                        .foregroundColor(Theme.primaryForeground)
-                        .frame(width: 60, height: 60)
-                        .background(Theme.primary)
-                        .clipShape(Circle())
-                        .shadow(color: Theme.primary.opacity(0.4), radius: 8, y: 4)
-                }
-                .offset(y: -20)
-                Spacer()
-                TabButton(
-                    icon: "clock.fill",
-                    title: "History",
-                    isSelected: selectedTab == .history
-                ) {
-                    selectedTab = .history
-                }
-            }
-            .padding(.horizontal, 32)
-            .padding(.vertical, 12)
-            .background(
-                Theme.card.shadow(color: .black.opacity(0.1), radius: 10, y: -2)
-            )
+            tabBar
         }
         .sheet(isPresented: $showAddProgram, onDismiss: {
             programsListRefreshTrigger += 1
         }) {
             AddEditProgramScreen(editProgram: nil)
         }
+    }
+
+    private var tabBar: some View {
+        HStack(spacing: 0) {
+            TabButton(
+                icon: "dumbbell.fill",
+                title: "Programs",
+                isSelected: selectedTab == .programs
+            ) {
+                selectedTab = .programs
+            }
+            Spacer()
+            Button(action: { showAddProgram = true }) {
+                Image(systemName: "plus")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundColor(Theme.primaryForeground)
+                    .frame(width: 60, height: 60)
+                    .background(Theme.primary)
+                    .clipShape(Circle())
+                    .shadow(color: Theme.primary.opacity(0.4), radius: 8, y: 4)
+            }
+            .offset(y: -20)
+            Spacer()
+            TabButton(
+                icon: "clock.fill",
+                title: "History",
+                isSelected: selectedTab == .history
+            ) {
+                selectedTab = .history
+            }
+        }
+        .padding(.horizontal, 32)
+        .padding(.top, 12)
+        .padding(.bottom, 12)
+        .background(Theme.card.shadow(color: .black.opacity(0.1), radius: 10, y: -2))
     }
 }
 
