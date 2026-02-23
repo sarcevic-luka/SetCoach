@@ -7,60 +7,86 @@ enum Tab {
 }
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
+    @State private var dependencies: Dependencies?
     @State private var selectedTab: Tab = .programs
     @State private var showAddProgram = false
+    @State private var programsListRefreshTrigger = 0
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        Group {
+            if let dependencies {
+                mainContent(dependencies: dependencies)
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .environment(\.dependencies, dependencies)
+        .onAppear {
+            if dependencies == nil {
+                dependencies = Dependencies(context: modelContext)
+            }
+        }
+    }
+
+    private func mainContent(dependencies: Dependencies) -> some View {
+        VStack(spacing: 0) {
             Group {
                 switch selectedTab {
                 case .programs:
-                    HomeScreen()
+                    HomeScreen(refreshTrigger: programsListRefreshTrigger)
                 case .history:
                     HistoryScreen()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            HStack(spacing: 0) {
-                TabButton(
-                    icon: "dumbbell.fill",
-                    title: "Programs",
-                    isSelected: selectedTab == .programs
-                ) {
-                    selectedTab = .programs
-                }
-                Spacer()
-                Button(action: { showAddProgram = true }) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 24, weight: .semibold))
-                        .foregroundColor(Theme.primaryForeground)
-                        .frame(width: 60, height: 60)
-                        .background(Theme.primary)
-                        .clipShape(Circle())
-                        .shadow(color: Theme.primary.opacity(0.4), radius: 8, y: 4)
-                }
-                .offset(y: -20)
-                Spacer()
-                TabButton(
-                    icon: "clock.fill",
-                    title: "History",
-                    isSelected: selectedTab == .history
-                ) {
-                    selectedTab = .history
-                }
-            }
-            .padding(.horizontal, 32)
-            .padding(.vertical, 12)
-            .background(
-                Theme.card.shadow(color: .black.opacity(0.1), radius: 10, y: -2)
-            )
+            tabBar
         }
-        .sheet(isPresented: $showAddProgram) {
+        .sheet(isPresented: $showAddProgram, onDismiss: {
+            programsListRefreshTrigger += 1
+        }) {
             AddEditProgramScreen(editProgram: nil)
         }
     }
+
+    private var tabBar: some View {
+        HStack(spacing: 0) {
+            TabButton(
+                icon: "dumbbell.fill",
+                title: "Programs",
+                isSelected: selectedTab == .programs
+            ) {
+                selectedTab = .programs
+            }
+            Spacer()
+            Button(action: { showAddProgram = true }) {
+                Image(systemName: "plus")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundColor(Theme.primaryForeground)
+                    .frame(width: 60, height: 60)
+                    .background(Theme.primary)
+                    .clipShape(Circle())
+                    .shadow(color: Theme.primary.opacity(0.4), radius: 8, y: 4)
+            }
+            .offset(y: -20)
+            Spacer()
+            TabButton(
+                icon: "clock.fill",
+                title: "History",
+                isSelected: selectedTab == .history
+            ) {
+                selectedTab = .history
+            }
+        }
+        .padding(.horizontal, 32)
+        .padding(.top, 12)
+        .padding(.bottom, 12)
+        .background(Theme.card.shadow(color: .black.opacity(0.1), radius: 10, y: -2))
+    }
 }
+
 
 private struct TabButton: View {
     let icon: String
@@ -84,5 +110,5 @@ private struct TabButton: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: [Program.self, TrainingDay.self, ExerciseTemplate.self, WorkoutSession.self, WorkoutExercise.self, ExerciseSet.self], inMemory: true)
+        .modelContainer(for: [ProgramModel.self, TrainingDayModel.self, ExerciseTemplateModel.self, WorkoutSessionModel.self, WorkoutExerciseModel.self, ExerciseSetModel.self], inMemory: true)
 }
